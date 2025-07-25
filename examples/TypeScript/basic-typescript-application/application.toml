@@ -1,0 +1,10 @@
+name = "my-typescript-application"
+component_target = 'my-typescript-application:0.1.0'
+
+[[trigger]]
+type = 'http'
+path = '/my-typescript-application'
+method = 'GET'
+
+[capabilities]
+allowed-outgoing-url = ["https://dummyjson.com/*"]
