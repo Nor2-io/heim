@@ -1,0 +1,13 @@
+name = "myapp"
+version = "0.1.0"
+
+[build.dev]
+build = "cargo build --target=wasm32-wasip2"
+wasm_path = "target/wasm32-wasip2/debug/myapp.wasm"
+
+[build.prod]
+build = "cargo build --target=wasm32-wasip2 --release"
+wasm_path = "target/wasm32-wasip2/release/myapp.wasm"
+
+[input.env]
+HELLO_MESSAGE = { type = "String" }
