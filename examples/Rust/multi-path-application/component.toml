@@ -1,0 +1,10 @@
+name = "multi-path-app"
+version = "0.1.0"
+
+[build.dev]
+build = "cargo build --target=wasm32-wasip2"
+wasm_path = "target/wasm32-wasip2/debug/multi_path_app.wasm"
+
+[build.prod]
+build = "cargo build --target=wasm32-wasip2 --release"
+wasm_path = "target/wasm32-wasip2/release/multi_path_app.wasm"
