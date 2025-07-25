@@ -1,0 +1,8 @@
+name = "my-csharp-application"
+component_target = 'my-csharp-application:0.1.0'
+
+[[trigger]]
+type = 'http'
+path = '/my-csharp-application'
+method = 'GET'
+

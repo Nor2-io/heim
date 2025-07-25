@@ -1,0 +1,6 @@
+package nor2:heim;
+
+world nor2-world {
+  include wasi:http/proxy@0.2.1;
+  import wasi:cli/environment@0.2.1;
+}
