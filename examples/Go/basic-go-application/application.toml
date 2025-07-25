@@ -1,0 +1,7 @@
+name = "myapp"
+component_target = 'myapp:0.1.0'
+
+[[trigger]]
+type = 'http'
+path = '/myapp'
+method = 'GET'
