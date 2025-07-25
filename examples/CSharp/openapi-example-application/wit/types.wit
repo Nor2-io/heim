@@ -1,0 +1,43 @@
+
+interface types {
+  record extract-geo-location-request-body {
+    image: string,
+  }
+  record geo-location-response {
+    latitude: option<f64>,
+    longitude: option<f64>,
+  }
+  variant extract-geo-location-error {
+    internal-server-error,
+  }
+  variant extract-geo-location-ok {
+    ok(geo-location-response),
+  }
+  record coordinates {
+    latitude: f64,
+    longitude: f64,
+  }
+  record country-response {
+    country: option<string>,
+  }
+  variant get-country-from-coordinates-error {
+    internal-server-error,
+  }
+  variant get-country-from-coordinates-ok {
+    ok(country-response),
+  }
+  record sun-times-request {
+    coordinates: option<coordinates>,
+    date: option<string>,
+  }
+  record sun-times-response {
+    sunrise: option<string>,
+    sunset: option<string>,
+  }
+  variant get-sun-times-error {
+    internal-server-error,
+  }
+  variant get-sun-times-ok {
+    ok(sun-times-response),
+  }
+}

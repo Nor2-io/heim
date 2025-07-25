@@ -1,0 +1,17 @@
+name = "my-project"
+component_target = 'my-project:1.0.0'
+
+[[trigger]]
+type = "http"
+path = "/MyProjectPath/extract-geo-location"
+method = "POST"
+
+[[trigger]]
+type = "http"
+path = "/MyProjectPath/get-country"
+method = "POST"
+
+[[trigger]]
+type = "http"
+path = "/MyProjectPath/sun-times"
+method = "POST"

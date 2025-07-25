@@ -1,0 +1,211 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Demo Geolocation",
+        "version": "1.0.0",
+        "description": "API for geolocation services including image processing, country retrieval, and sun timing."
+    },
+    "tags": [
+        {
+        "name": "geo-location",
+        "description": "Operations related to geolocation services."
+        }
+    ],
+    "components": {
+        "schemas": {
+        "Coordinates": {
+            "type": "object",
+            "properties": {
+            "latitude": {
+                "type": "number",
+                "format": "double",
+                "description": "Latitude of the location."
+            },
+            "longitude": {
+                "type": "number",
+                "format": "double",
+                "description": "Longitude of the location."
+            }
+            },
+            "required": ["latitude", "longitude"]
+        },
+        "GeoLocationResponse": {
+            "type": "object",
+            "properties": {
+            "latitude": {
+                "type": "number",
+                "format": "double"
+            },
+            "longitude": {
+                "type": "number",
+                "format": "double"
+            }
+            }
+        },
+        "CountryResponse": {
+            "type": "object",
+            "properties": {
+            "country": {
+                "type": "string",
+                "description": "Name of the country."
+            }
+            }
+        },
+        "SunTimesResponse": {
+            "type": "object",
+            "properties": {
+            "sunrise": {
+                "type": "string",
+                "format": "time",
+                "description": "Time of sunrise."
+            },
+            "sunset": {
+                "type": "string",
+                "format": "time",
+                "description": "Time of sunset."
+            }
+            }
+        },
+        "SunTimesRequest": {
+            "type": "object",
+            "properties": {
+            "coordinates": {
+                "$ref": "#/components/schemas/Coordinates"
+            },
+            "date": {
+                "type": "string",
+                "format": "date",
+                "description": "Date for which to retrieve sun times."
+            }
+            }
+        }
+        }
+    },
+    "paths": {
+        "/extract-geo-location": {
+        "post": {
+            "tags": ["geo-location"],
+            "summary": "Extract Geo-Location from Image",
+            "operationId": "extractGeoLocation",
+            "parameters": [
+            {
+                "name": "Authorization",
+                "in": "header",
+                "required": true,
+                "schema": {
+                "type": "string"
+                }
+            }
+            ],
+            "requestBody": {
+            "required": true,
+            "content": {
+                "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "binary",
+                        "description": "Base64 encoded image."
+                    }
+                    },
+                    "required": ["image"]
+                }
+                }
+            }
+            },
+            "responses": {
+            "200": {
+                "description": "Geo-Location coordinates extracted successfully.",
+                "content": {
+                "application/json": {
+                    "schema": {
+                    "$ref": "#/components/schemas/GeoLocationResponse"
+                    }
+                }
+                }
+            }
+            }
+        }
+        },
+        "/get-country": {
+        "post": {
+            "tags": ["geo-location"],
+            "summary": "Retrieve Country Name from Coordinates",
+            "operationId": "getCountryFromCoordinates",
+            "parameters": [
+            {
+                "name": "Authorization",
+                "in": "header",
+                "required": true,
+                "schema": {
+                "type": "string"
+                }
+            }
+            ],
+            "requestBody": {
+            "required": true,
+            "content": {
+                "application/json": {
+                "schema": {
+                    "$ref": "#/components/schemas/Coordinates"
+                }
+                }
+            }
+            },
+            "responses": {
+            "200": {
+                "description": "Country name retrieved successfully.",
+                "content": {
+                "application/json": {
+                    "schema": {
+                    "$ref": "#/components/schemas/CountryResponse"
+                    }
+                }
+                }
+            }
+            }
+        }
+        },
+        "/sun-times": {
+        "post": {
+            "tags": ["geo-location"],
+            "summary": "Retrieve Sun Rise and Set Times",
+            "operationId": "getSunTimes",
+            "parameters": [
+            {
+                "name": "Authorization",
+                "in": "header",
+                "required": true,
+                "schema": {
+                "type": "string"
+                }
+            }
+            ],
+            "requestBody": {
+            "required": true,
+            "content": {
+                "application/json": {
+                "schema": {
+                    "$ref": "#/components/schemas/SunTimesRequest"
+                }
+                }
+            }
+            },
+            "responses": {
+            "200": {
+                "description": "Sun rise and set times retrieved successfully.",
+                "content": {
+                "application/json": {
+                    "schema": {
+                    "$ref": "#/components/schemas/SunTimesResponse"
+                    }
+                }
+                }
+            }
+            }
+        }
+        }
+    }
+}
