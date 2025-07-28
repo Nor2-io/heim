@@ -1,0 +1,19 @@
+name = "my-csharp-application"
+version = "0.1.0"
+
+[registry.metadata]
+authors = [""]
+description = "Description of my-csharp-application"
+license = ""
+categories = [""]
+
+[build.dev]
+build = "dotnet build"
+wasm_path = "./bin/Debug/net10.0/wasi-wasm/native/my-csharp-application.wasm"
+
+[build.prod]
+build = "dotnet build . --configuration Release"
+wasm_path = "./bin/Release/net10.0/wasi-wasm/publish/my-csharp-application.wasm"
+
+[input.env]
+HELLO_MESSAGE = { type = "String" }

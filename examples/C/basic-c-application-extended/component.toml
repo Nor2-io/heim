@@ -1,0 +1,13 @@
+name = "myapp"
+version = "0.1.0"
+
+[build.dev]
+build = "wit-bindgen c wit/ --world proxy --out-dir bindings && clang --target=wasm32-wasip2 -nostdlib '-Wl,--no-entry' '-Wl,--export-all' -o myapp.wasm app.c bindings/proxy.c bindings/proxy_component_type.o %%WASI_SDK_PATH%%/share/wasi-sysroot/lib/wasm32-wasip2/libc.a"
+wasm_path = "myapp.wasm"
+
+[build.prod]
+build = "wit-bindgen c wit/ --world proxy --out-dir bindings && clang --target=wasm32-wasip2 -nostdlib -g0 '-Wl,--strip-all' '-Wl,--no-entry' '-Wl,--export-all' -o myapp.wasm app.c bindings/proxy.c bindings/proxy_component_type.o %%WASI_SDK_PATH%%/share/wasi-sysroot/lib/wasm32-wasip2/libc.a"
+wasm_path = "myapp.wasm"
+
+[input.env]
+HELLO_MESSAGE = { type = "String" }

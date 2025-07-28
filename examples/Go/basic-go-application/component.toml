@@ -1,0 +1,11 @@
+name = "myapp"
+version = "0.1.0"
+
+
+[build.dev]
+build = "tinygo build -target=wasip2 --wit-package ./wit/proxy.wit --wit-world nor2:heim/nor2-world -o bin/myapp.wasm main.go"
+wasm_path = "bin/myapp.wasm"
+
+[build.prod]
+build = "tinygo build -target=wasip2 --wit-package ./wit/proxy.wit --wit-world nor2:heim/nor2-world -gc=conservative -opt=z -o bin/myapp.wasm main.go"
+wasm_path = "bin/myapp.wasm"

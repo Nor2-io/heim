@@ -1,0 +1,16 @@
+package heim:demo-geolocation@1.0.0;
+
+interface geo-location {
+  use types.{ extract-geo-location-request-body, extract-geo-location-ok, extract-geo-location-error, coordinates, get-country-from-coordinates-ok, get-country-from-coordinates-error, sun-times-request, get-sun-times-ok, get-sun-times-error };
+  /// Extract Geo-Location from Image
+  extract-geo-location: func(authorization: string, extract-geo-location-request-body: extract-geo-location-request-body) -> result<extract-geo-location-ok, extract-geo-location-error>;
+  /// Retrieve Country Name from Coordinates
+  get-country-from-coordinates: func(authorization: string, get-country-from-coordinates-request-body: coordinates) -> result<get-country-from-coordinates-ok, get-country-from-coordinates-error>;
+  /// Retrieve Sun Rise and Set Times
+  get-sun-times: func(authorization: string, get-sun-times-request-body: sun-times-request) -> result<get-sun-times-ok, get-sun-times-error>;
+}
+
+/// API for geolocation services including image processing, country retrieval, and sun timing.
+world demo-geolocation {
+  export geo-location;
+}

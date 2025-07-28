@@ -1,0 +1,10 @@
+name = "my-python-application"
+component_target = 'my-python-application:0.1.0'
+
+[[trigger]]
+type = 'http'
+path = '/my-python-application'
+method = 'GET'
+
+[capabilities]
+allowed-outgoing-url = ["https://dummyjson.com/*"]

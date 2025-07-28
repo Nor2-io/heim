@@ -1,0 +1,19 @@
+name = "my-python-application"
+version = "0.1.0"
+
+[registry.metadata]
+authors = [""]
+description = "Description of my-python-application"
+license = ""
+categories = [""]
+
+[build.dev]
+build = "componentize-py -d ./wit -w wasi:http/proxy@0.2.1 componentize app -o my-python-application.wasm"
+wasm_path = "./my-python-application.wasm"
+
+[build.prod]
+build = "componentize-py -d ./wit -w wasi:http/proxy@0.2.1 componentize app -o my-python-application.wasm"
+wasm_path = "./my-python-application.wasm"
+
+[input.env]
+HELLO_MESSAGE = { type = "String" }

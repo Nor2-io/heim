@@ -1,0 +1,21 @@
+[package]
+name = "myapp"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[package.metadata.component]
+package = "myorg:myapp"
+proxy = false
+
+[dependencies]
+waki = { version = "0.5.0", features = ["json"] }  
+serde = { version = "1.0.216", features = ["derive"] }
+serde_json = "1.0.133"
+
+# reduce wasm binary size
+[profile.release]
+lto = true
+strip = "symbols"

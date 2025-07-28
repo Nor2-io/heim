@@ -1,0 +1,19 @@
+name = "my-typescript-application"
+version = "0.1.0"
+
+[registry.metadata]
+authors = [""]
+description = "Description of my-typescript-application"
+license = ""
+categories = [""]
+
+[build.dev]
+build = "npm run build"
+wasm_path = "./dist/my-typescript-application.wasm"
+
+[build.prod]
+build = "npm run build"
+wasm_path = "./dist/my-typescript-application.wasm"
+
+[input.env]
+HELLO_MESSAGE = { type = "String" }

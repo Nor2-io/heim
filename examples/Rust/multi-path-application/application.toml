@@ -1,0 +1,10 @@
+name = "multi-path-app"
+component_target = 'multi-path-app:0.1.0'
+
+[[trigger]]
+type = 'http'
+path = '/multi-path-app/*'
+method = 'ALL'
+
+[capabilities]
+allowed-outgoing-url = ["https://dummyjson.com/*"]

@@ -1,0 +1,10 @@
+name = "my-csharp-application"
+component_target = 'my-csharp-application:0.1.0'
+
+[[trigger]]
+type = 'http'
+path = '/mypath'
+method = 'POST'
+
+[env]
+HELLO_MESSAGE = "you"
