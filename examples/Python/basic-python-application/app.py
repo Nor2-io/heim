@@ -2,10 +2,10 @@ import asyncio
 import hashlib
 import poll_loop
 
-from proxy import exports
-from proxy.types import Ok
-from proxy.imports import types
-from proxy.imports.types import (
+from nor2_world import exports
+from nor2_world.types import Ok
+from nor2_world.imports import types
+from nor2_world.imports.types import (
     Method_Get,
     Method_Post,
     Scheme,
