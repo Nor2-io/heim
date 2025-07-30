@@ -12,7 +12,7 @@ export const incomingHandler = {
     responseOutparam: ResponseOutparam
   ) {
     // Start building an outgoing response
-    const outgoingResponse = new OutgoingResponse(new Fields());
+    const outgoingResponse = new OutgoingResponse(Fields.fromList([["Content-Type", new TextEncoder().encode("application/json")]]));
 
     // Access the outgoing response body
     let outgoingBody = outgoingResponse.body();
