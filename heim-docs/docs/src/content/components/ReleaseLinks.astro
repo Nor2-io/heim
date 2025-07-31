@@ -1,0 +1,38 @@
+---
+interface Props {
+    os: string;
+    arch: string;
+    version: string;
+    backup_version?: string,
+    backup_url?: string,
+    backup_name?: string,
+}
+
+const { os, arch, version, backup_version, backup_url, backup_name, ...attributes } = Astro.props;
+
+const data = await fetch(`https://cloud.heim.dev/heim/release?version=${version}&os=${os}&arch=${arch}`).then(
+    (response) => response.json()
+).catch((e) => {
+  return {
+    version: `${backup_version}`,
+    assets: [
+        {
+          name: `${backup_name}`,
+          download_url: `${backup_url}`
+        }
+    ]
+  }
+});
+
+
+console.log(data);
+
+import { LinkButton, Icon } from '@astrojs/starlight/components';
+---
+
+{
+    data.assets.map((asset: { 
+        name: string;
+        download_url: string | URL; 
+        }) => <LinkButton href={asset.download_url} {...attributes}><Icon name="download" label={asset.name} />{asset.name}</LinkButton>)
+}

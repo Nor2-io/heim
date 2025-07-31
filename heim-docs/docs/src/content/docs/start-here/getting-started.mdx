@@ -1,0 +1,502 @@
+---
+title: "Getting Started"
+description: A guide to getting started with Heim.
+date: 2024-11-30
+lastmod: 2025-06-12
+sidebar:
+  order: 1
+---
+
+import {
+  Badge,
+  CardGrid,
+  Code,
+  FileTree,
+  Icon,
+  LinkButton,
+  LinkCard,
+  Steps,
+  TabItem,
+  Tabs,
+} from "@astrojs/starlight/components";
+
+You'll get started with Heim by going through a few simple steps. Read on to find out how to get the Heim `runtime` going, and how to get started with using your own applications in Heim.
+
+<br />
+
+<Steps>
+    <ol>
+        <li>
+            ### Install required software
+
+            Install any software required for working with the language or framework you are interested in.
+
+            Heim currently supports working with `C#`, `Python`, `JavaScript` / `TypeScript`, `Rust`, `C` and `Go` .
+
+            Read more about installing the respective requirements for the currently supported languages, and how to install the Heim tools in the Heim [Installation documentation](./../../start-here/installation/).
+
+            <br/>
+
+        </li>
+        <li>
+            ### Install Heim
+
+            Heim can be downloaded and installed in multiple ways. Depending on your operating system, Heim may be installed as an _app_, from an _installer package_, or by downloading an _archive_ and unpacking it, and then running a script included in the package.
+
+            We currently support installing Heim on [Windows](./../../start-here/installation/windows/), [macOS](./../../start-here/installation/macos/), and [Linux](./../../start-here/installation/linux/).
+
+            <br/>
+
+            :::note[Troubleshooting]
+                The Heim installer, or installation script, may add path variables to your operating system.
+
+                In some instances it may be necessary to reboot your operating system after installing, or even re-run the installer with elevated access for the necessary environment variables to be available for Heim to use. Try this if Heim commands aren't working, or if folders referred to in the steps below appear to be missing after installing Heim.
+            :::
+
+            <br/>
+
+        </li>
+        <li>
+            ### Start Heim runtime.
+
+            Assuming that Heim has been correctly installed, starting the Heim runtime is as easy as running the following simple command in a terminal or console window:
+
+            ```bash frame="none"
+                heim start
+            ```
+
+            <br/>
+
+            Alternatively, you may access the `heim-runtime` file directly, by typing the following command in a terminal or console window:
+
+            ```bash frame="none"
+                heim-runtime
+            ```
+
+            <br/>
+
+            :::note[Output]
+                When you start and use the Heim runtime, it will output information about successful and unsuccessful operations in the window you start it in.
+            :::
+
+            <br/>
+
+        </li>
+        <li>
+            ### Using applications
+
+            There are two ways of getting started using applications in Heim. In broad strokes, the options are to either copy an existing application into Heim, or to create an application from a template.
+
+            Click the tabs below to read more about how to start using applications in Heim.
+
+            <br/>
+
+            <Tabs syncKey="method">
+                <TabItem label="use existing application" icon="document">
+
+                    ##### `<OPTIONAL>` **Place valid application folder in Heim directory**
+
+                    If you want to use an existing, valid application that has been created elsewhere, start by placing the application folder in the directory you want to mount the application from.
+
+                    In the examples to follow, we'll assume that you are using windows, and that you place your application folder in the `C:\heim-applications` directory.
+
+                    <br/>
+
+                    ##### **Deploy the application**
+
+                        To deploy your application, use the following command in a terminal or console window, while standing in the application folder you've chosen:
+
+                        ```bash
+                        heim deploy
+                        ```
+
+                        <br/>
+
+                        :::note[Windows]
+
+                            The following example is created on Windows, using a powershell terminal window.
+
+                            The process will be the same in Linux or macOS, but using the appropriate default or custom terminal in the operating system you've chosen.
+
+                        :::
+
+                        <br/>
+
+                        Assuming that your application directory is `C:\heim-applications` and the application folder is `a-new-api`, you should be looking at something like this in your terminal window.
+
+                        ```powershell
+                        PS C:\heim-applications\a-new-api> heim deploy
+
+                        ```
+
+                        <br/>
+
+                        :::note[Heim runtime]
+                            In order to use, or test your deployed application, you need to have your Heim runtime running.
+
+                            See the previous section about how to [start the Heim runtime](#start-heim-runtime), for information.
+                        :::
+
+                    <br/>
+
+                </TabItem>
+                <TabItem label="create application from template" icon="add-document">
+
+                    ##### `<OPTIONAL>` **Install your own templates**
+
+                        Place valid template folders in the `templates` directory in your Heim root folder.
+
+                        :::note[Windows]
+
+                        On Windows, the path would be `%USERPROFILE%/.heim/templates`
+
+                        :::
+
+                    <br/>
+
+                    ##### **Create application from a template**
+
+                        ###### `use heim new`
+
+                        Use the command:
+
+                        ```bash
+                        heim new
+                        ```
+
+                        <br/>
+
+                        :::note[Examples]
+
+                            The following examples are created on Windows, using a powershell terminal window.
+
+                            The process will be the same in Linux or macOS, but requires using the appropriate default or custom terminal in the operating system you've chosen.
+
+                        :::
+
+                        <br/>
+
+                        ###### `select template`
+
+                        Running `heim new` will trigger a template selection menu:
+
+                        ```powershell
+                            PS C:\heim-applications> heim new
+                            ? Select template:  ›
+                            csharp-http
+                            rust-graphql
+                            rust-http
+                        ```
+
+                        Use the `up` and `down` arrow keys on your keyboard to navigate to the template you want to use. Press `enter` to confirm your choice.
+
+                        <br/>
+
+                        ###### `set options`
+
+                        After confirming your choice of template, you will next need to set any template-specific options.
+
+                        For instance, if the selected template will generate an http API, you might see something like this:
+
+                        ```powershell
+                        PS C:\heim-applications> heim new
+                        ✔ Select template:  · csharp-http
+                        ? Http trigger method POST/GET, Default (GET) ›
+                        ```
+
+                        You may type out your selection, in this case a valid [HTTP method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods), or _ALL_ to allow for any HTTP method. Press `enter` when done. If you press `enter` without typing anything, the selection will be the given default value. In the example above, the default value would be _GET_.
+
+                        <br/>
+
+                        ###### `set trigger path`
+
+                        As you've set your options, you'll next need to decide on the trigger path for your application:
+
+                        ```powershell
+                        PS C:\heim-applications> heim new
+                        ✔ Select template:  · csharp-http
+                        ✔ Http trigger method POST/GET, Default · GET
+                        ? Http trigger path /??? , Default (/hello) ›
+                        ```
+
+                        Type in a path value and press `enter` to confirm your trigger path. Press `enter` without typing in a value to select the indicated default path.
+
+                        <br/>
+
+                        ###### `set package name`
+
+                        Next, you'll need to select a package name:
+
+                        ```powershell
+                        PS C:\heim-applications> heim new
+                        ✔ Select template:  · csharp-http
+                        ✔ Http trigger method POST/GET, Default · GET
+                        ✔ Http trigger path /??? , Default · my-api
+                        ? Package name, (Required) ›
+                        ```
+                        Note that you have to pick a name for your application package. There is no default value to use.
+
+                        <br/>
+
+                        :::caution[Heim runtime]
+
+                            If you've already started the Heim runtime in the previous step, your application should now be ready to deploy.
+
+                            If not, now is a good time to [start the Heim runtime](#start-heim-runtime).
+
+                        :::
+
+                        <br/>
+
+                        ##### **Deploy the application**
+
+                        <br/>
+
+                        To deploy your application, use the following command in a terminal or console window, while standing in the application folder you've created by going through the application creation process:
+
+                        ```bash
+                        heim deploy
+                        ```
+
+                        If you've gone through the process, as hitherto described, deploying the application would look as follows:
+
+                        ```powershell
+                        PS C:\heim-applications\a-new-api> heim deploy
+
+                        ```
+
+                    <br/>
+
+                </TabItem>
+            </Tabs>
+
+            <br/>
+
+        </li>
+        <li>
+            ### Working with applications
+
+            To successfully test and use an application in Heim, you need to have [started the Heim runtime](#start-heim-runtime). You also need to deploy the application, which you can read about in the previous section about [using applications](#using-applications).
+
+            <br/>
+
+            #### Test application
+
+            Assuming that everything is up and running, your application should now be accessible through the trigger path assigned to it when it was created.
+
+            should you happen to be unaware of the path for a particular application, you can find it (and edit it) in the [application.toml](./../../start-here/configuration/applicationtoml/) in the root folder for that application.
+
+            <br/>
+
+            The full path for an application will be something like:
+
+            `${server-address}/${trigger-path}`
+
+            <br/>
+
+            For instance, if you are running a local installation of Heim, and you start it on port 3000, a valid address for an application with the http trigger path `my-api` will be something like:
+
+            `127.0.0.1:3000/my-api`
+
+            From there, you'll be able to access, and test any endpoints you've created for the application.
+
+            <br/>
+
+            #### Edit application code
+
+            Once you've worked with Heim for a while, you will no doubt have your own applications, perhaps stretching over multiple files, structured according to your own standards and requirements.
+
+            However, during your first steps with Heim, you'll likely download an example application, or create one from a template. You can read more about how to use an existing application, and how to create your own application from a template in the section about [using applications](#using-applications), above.
+
+            Read on for information about how to start working with one of our example applications, or an application created from a template.
+
+            <br/>
+
+             <Tabs syncKey="method">
+                <TabItem label="C-Sharp" icon="seti:c-sharp">
+
+                    A basic Heim C# application, created from a template or copied from one of our examples, should be structured something like this:
+
+                    <FileTree>
+                        - \{application-name\}
+                            - wit
+                                - deps
+                                    - ...
+                                - world.wit
+                            - .gitignore
+                            - **component.toml**
+                            - **application.toml**
+                            - \{application-name\}.csproj
+                            - **Program.cs**
+                    </FileTree>
+
+                    <br/>
+
+                    - Edit the `Program.cs` file, if you want to change the source code of your application.
+                    - Edit the [`component.toml`](./../../start-here/configuration/componenttoml/) file, if you want to change your application component metadata, define environment variables, or alter your build configurations.
+                    - Edit the [`application.toml`](./../../start-here/configuration/applicationtoml/) file, if you want to change your application definitions, set values to environment variables, or alter application triggers.
+                </TabItem>
+                <TabItem label="Rust" icon="seti:rust">
+
+                    A basic Heim Rust application, created from a template or copied from one of our examples, should be structured something like this:
+
+                    <FileTree>
+                        - \{application-name\}
+                            - **src**
+                                - lib.rs
+                            - target
+                                - ...
+                            - .gitignore
+                            - Cargo.toml
+                            - **component.toml**
+                            - **application.toml**
+                    </FileTree>
+
+                    <br/>
+
+                    - Edit the contents of the `src` folder, if you want to change the source code of your application.
+                    - Edit the [`component.toml`](./../../start-here/configuration/componenttoml/) file, if you want to change your application component metadata, define environment variables, or alter your build configurations.
+                    - Edit the [`application.toml`](./../../start-here/configuration/applicationtoml/) file, if you want to change your application definitions, set values to environment variables, or alter application triggers.
+                </TabItem>
+                <TabItem label="Python" icon="seti:python">
+
+                    A basic Heim Python application, created from a template or copied from one of our examples, should be structured something like this:
+
+                    <FileTree>
+                        - \{application-name\}
+                            - wit
+                                - ...
+                            - \_\_pycache\_\_
+                                - ...
+                            - .gitignore
+                            - app.py
+                            - **component.toml**
+                            - **application.toml**
+                    </FileTree>
+
+                    <br/>
+
+                    - Edit the contents of `app.py`, if you want to change the source code of your application.
+                    - Edit the [`component.toml`](./../../start-here/configuration/componenttoml/) file, if you want to change your application component metadata, define environment variables, or alter your build configurations.
+                    - Edit the [`application.toml`](./../../start-here/configuration/applicationtoml/) file, if you want to change your application definitions, set values to environment variables, or alter application triggers.
+                </TabItem>
+                <TabItem label="TypeScript" icon="seti:typescript">
+
+                    A basic Heim TypeScript application, created from a template or copied from one of our examples, should be structured something like this:
+
+                    <FileTree>
+                        - \{application-name\}
+                            - node_modules
+                                - ...
+                            - wit
+                                - ...
+                            - types
+                                - ...
+                            - **src**
+                                - http.ts
+                            - .gitignore
+                            - package.json
+                            - tsconfig.json
+                            - vite.config.ts
+                            - **component.toml**
+                            - **application.toml**
+                    </FileTree>
+
+                    <br/>
+
+                    - Edit the contents of the `src` folder, if you want to change the source code of your application.
+                    - Edit the [`component.toml`](./../../start-here/configuration/componenttoml/) file, if you want to change your application component metadata, define environment variables, or alter your build configurations.
+                    - Edit the [`application.toml`](./../../start-here/configuration/applicationtoml/) file, if you want to change your application definitions, set values to environment variables, or alter application triggers.
+                </TabItem>
+                <TabItem label="C" icon="seti:c">
+
+                    A basic Heim C application, created from a template or copied from one of our examples, should be structured something like this:
+
+                    <FileTree>
+                        - \{application-name\}
+                            - bindings
+                                - proxy.h
+                            - wit
+                                - deps
+                                    - ...
+                                - deps.lock
+                                - deps.toml
+                                - handler.wit
+                                - proxy.wit
+                                - types.wit
+                            - .heimignore
+                            - **component.toml**
+                            - **application.toml**
+                            - app.c
+                    </FileTree>
+
+                    <br/>
+
+                    - Edit the `app.c` file, if you want to change the source code of your application.
+                    - Edit the [`component.toml`](./../../start-here/configuration/componenttoml/) file, if you want to change your application component metadata, define environment variables, or alter your build configurations.
+                    - Edit the [`application.toml`](./../../start-here/configuration/applicationtoml/) file, if you want to change your application definitions, set values to environment variables, or alter application triggers.
+                </TabItem>
+                <TabItem label="Go" icon="seti:go">
+
+                    A basic Heim Go application, created from a template or copied from one of our examples, should be structured something like this:
+
+                    <FileTree>
+                        - \{application-name\}
+                            - wasi
+                                - ...
+                            - wit
+                                - proxy.wit
+                            - .gitignore
+                            - **application.toml**
+                            - **component.toml**
+                            - go.mod
+                            - go.sum
+                            - main.go
+                    </FileTree>
+
+                    <br/>
+
+                    - Edit the `main.go` file if you want to change the source code of your application.
+                    - Edit the [`component.toml`](./../../start-here/configuration/componenttoml/) file, if you want to change your application component metadata, define environment variables, or alter your build configurations.
+                    - Edit the [`application.toml`](./../../start-here/configuration/applicationtoml/) file, if you want to change your application definitions, set values to environment variables, or alter application triggers.
+                </TabItem>
+            </Tabs>
+
+            <br/>
+
+        </li>
+    </ol>
+
+</Steps>
+
+## The Heim command line interface (CLI)
+
+You can control everything Heim does through our CLI. When reading through the previous sections of this document, you've found out how to [start the Heim runtime](#start-heim-runtime), all as how to [deploy applications, and how to create applications from a template](#using-applications), all of which can be done through our CLI.
+
+But the CLI can do so much more! Have a look at our [CLI reference](./../../cli/cli-reference/) documentation, to find out what else the CLI is capable of.
+
+<br />
+
+---
+
+<br />
+
+## Summary
+
+To get going with heim, you need to go through a few simple steps:
+
+1. [Install required software](#install-required-software) – you'll likely need software for building and working with a programming language.
+
+2. [Install Heim](#install-heim) – you'll need to install the Heim tools. There are different options for installing Heim, depending on your operating system.
+
+3. [Start Heim runtime](#start-heim-runtime) – the Heim runtime can be started with the CLI command `heim start`, or `heim-runtime`.
+
+4. [Start using an application](#using-applications) – you'll need to create an application from a template, or deploy an existing application.
+
+5. [Work with an application](#working-with-applications) – edit your application source code, or test your application through its trigger path.
+
+<br />
+
+:::note[CLI reference]
+Check out our [CLI reference](./../../cli/cli-reference/) documentation for more information about using Heim, and what else you can do, once you've gotten started with Heim.
+:::

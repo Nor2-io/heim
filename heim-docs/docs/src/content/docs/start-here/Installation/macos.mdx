@@ -1,0 +1,40 @@
+---
+title: "MacOS"
+description: Installation procedure for the Heim tools, in Mac OS
+date: 2024-12-04
+lastmod: 2024-12-19
+---
+
+import {
+  Tabs,
+  TabItem,
+  Code,
+  Steps,
+  LinkCard,
+} from "@astrojs/starlight/components";
+import ReleaseLinks from "../../../components/ReleaseLinks.astro";
+
+<Steps>
+    <ol>
+        <li>
+            Run the install script
+            <Code code='
+                        curl -L https://cloud.heim.dev/heim/release/download?file=heim.sh | sh
+                    ' lang="sh" frame="none" />    
+        </li>
+        <li>
+            <LinkCard title="Getting Started" href="./../../../start-here/getting-started/#start-heim-runtime" description="Start using Heim" />
+        </li>
+    </ol>
+
+</Steps>
+
+
+<ReleaseLinks
+  os="macos"
+  version="current"
+  backup_version="0.5.1"
+  backup_url="https://cloud.heim.dev/heim/release/download?file=heim_0.5.1_aarch64_macos.tar.gz&major=v0"
+  backup_name="heim_0.5.1_aarch64_macos.tar.gz"
+  variant="secondary"
+/>

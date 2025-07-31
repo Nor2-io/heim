@@ -1,0 +1,17 @@
+[package]
+name = "heim-docs"
+version = '0.5.2'
+edition = '2024'
+authors = ["Nor2"]
+description = "Heim docs component"
+documentation = "https://docs.heim.dev/"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wstd = { version = "0.5.3", features = ["json"] }
+http = "1.3.1"
+include_dir = { version = "0.7.4", features = ["glob"] }
+mime_guess = "2.0.5"

@@ -1,0 +1,7 @@
+name = "heim-docs"
+component_target = 'heim-docs:0.2.0'
+
+[[trigger]]
+type = 'http'
+path = '/heim/docs/*'
+method = 'GET'

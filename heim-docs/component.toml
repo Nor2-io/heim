@@ -1,0 +1,15 @@
+name = "heim-docs"
+version = "0.2.0"
+
+[registry_metadata]
+authors = ["Nor2"]
+description = "Description of heim-docs"
+license = "MIT OR Apache-2.0 WITH LLVM-exception"
+
+[build.dev]
+build = "pnpm --dir docs install && pnpm --dir docs build && cargo build --target=wasm32-wasip2"
+wasm_path = "./target/wasm32-wasip2/debug/heim_docs.wasm"
+
+[build.prod]
+build = "pnpm --dir docs install && pnpm --dir docs build && cargo build --target=wasm32-wasip2 --release"
+wasm_path = "./target/wasm32-wasip2/release/heim_docs.wasm"

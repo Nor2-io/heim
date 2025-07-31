@@ -1,0 +1,484 @@
+---
+title: Reference
+description: Reference of all the heim cli commands
+date: 2024-12-04
+lastmod: 2024-12-19
+maxHeadingLevel: 6
+---
+
+import { Badge } from "@astrojs/starlight/components";
+
+### Global
+
+:::note[tags]
+`<REQUIRED>` indicates a required value  
+`[OPTIONAL]` indicates an optional value<br/>
+
+<Badge text="beta: not available" variant="caution" /> this feature isn't available
+in beta version
+<br />
+<Badge text="beta: use --local" variant="caution" /> this feature only supports
+the --local switch in beta version
+
+:::
+
+<br />
+
+{/* ###### `--project <PROJECT>` <Badge text="beta: not available" variant="caution" />
+
+<details>
+<summary>Aliases</summary>
+`--pr <PROJECT>`  
+`--proj <PROJECT>`
+</details>
+Set the project to use when executing commands
+
+`<PROJECT>` the project id */}
+
+###### `-v`, `--verbose`
+
+Verbose output, include times-stamps, files and rows for print-outs
+
+###### `-L`, `--local`
+
+Deploy to local instance
+
+###### `-C`, `--cloud`
+
+Deploy to cloud
+
+###### `-h`, `--help`
+
+Print heim cli help message
+
+###### `-V`,`--version`
+
+Print heim cli version
+
+#### \<COMMAND\> Help
+
+```sh frame=none
+heim <COMMAND> help
+```
+
+Print heim cli help message
+
+`<COMMAND>` the heim cli command to print the help for
+
+---
+
+### New [OPTIONS] [TEMPLATE]
+
+```sh frame=none
+heim new [OPTIONS] [TEMPLATE]
+```
+
+Create new project from a template.
+
+`[TEMPLATE]` Name of the template to create a project from, [Template list](#list-options)
+
+###### `-s <SPEC>`, `--specification <SPEC>`
+
+<details>
+<summary>Aliases</summary>
+`--spec <SPEC>`
+</details>
+The specification to use to set the template values.
+
+`<SPEC>` the path to the specification.
+
+{/* ###### `-w`, `--workspace`
+
+Add project to existing workspace or create a new workspace if none exists. */}
+
+### Start [OPTIONS]
+
+```sh frame=none
+heim start
+```
+Start the heim runtime.
+
+###### [Global Flags](#global)
+
+### Deploy [OPTIONS] \<MODULE\>
+
+```sh frame=none
+heim deploy [OPTIONS] [PATH]
+```
+
+Build and deploy a module to heim.
+
+`[PATH]` Path to build, if a path is not set it will search in the current folder.
+
+###### [Global Flags](#global)
+
+###### `-d`, `--dev`
+<details>
+<summary>Aliases</summary>
+`--debug`
+</details>
+
+Build an application with debug information.
+
+###### `-r`, `--release`
+<details>
+<summary>Aliases</summary>
+`--release`
+</details>
+
+Creates an optimized build of an application without debug information.
+
+{/* ###### `-c`, `--component <COMPONENT>`
+
+Target a specific component in a project or app definition. */}
+
+###### `-f <FILE>`, `--file <FILE>`
+<details>
+<summary>Aliases</summary>
+`--component`  
+`--wasm`
+</details>
+
+Target an already built wasm component.
+
+`<FILE>` Path to the wasm component.
+
+###### `-e <ENVS>`, `--envs <ENVS>`
+
+Add environment values. 
+For non regional environment values:<br/>`--envs env1=value1 --envs env2=value2`..<br/>
+For region specific values add .REGION to env-name:<br/>`--envs env1.REGION-1=value1 --envs env2.REGION-1=value2`..
+
+`<ENVS>` Environment variables.
+
+### Watch [OPTIONS] [EXTRA_ARGUMENTS]
+
+```sh frame=none
+heim watch [OPTIONS] [EXTRA_ARGUMENTS]
+```
+Deploys application on filesystem changes as default.
+Runs commands on filesystem changes when build flag is set.
+
+`[EXTRA_ARGUMENTS]` Extra arguments to be supplied to deploy command when running as default.
+
+###### [Global Flags](#global)
+
+###### `-p <PATH>`, `--path <PATH>`
+
+The path to a component, defaults to current directory.
+
+`<PATH>` Component path.
+
+###### `-c <CMD>`, `--cmd <CMD>`
+
+The command to run on all specified components when a change is detected. Defaults to build development.
+
+`<CMD>` Command to run.
+
+{/* ###### `-c <COMPONENTS...>`, `--components <COMPONENTS...>`
+
+Components to watch and execute the command on, default is all components in current directory.
+
+`<COMPONENTS>` List of components, Use , as delimiter when specifying multiple components. */}
+
+###### `-b`, `--build`
+
+Only build the wasm component instead of building and deploying.
+
+
+### Update
+
+```sh frame=none
+heim update [OPTIONS]
+```
+
+Update the heim toolchain
+
+###### `--auth-key <AUTH_KEY>`
+
+Auth key to allow download when update files require auth
+
+`<AUTH_KEY>` The auth key
+
+###### `--verbose`
+
+Verbose output.
+
+### Clear [OPTIONS]
+
+```sh frame=none
+heim clear [OPTIONS]
+```
+
+Clear heim cache, metrics and registry.
+
+###### `--force`
+
+Run clear without prompting.
+
+###### `--dry-run`
+
+Print the items that would be removed by clear.
+
+{/* ### Exec [OPTIONS] \<COMMAND\>
+
+```sh frame=none
+heim exec [OPTIONS] <COMMAND>
+```
+
+Run a command specified in [component.toml](./../../start-here/configuration/componenttoml/#commands)
+
+`<COMMAND>` the name of the command to execute
+
+###### `-c <COMPONENT>`, `--component <COMPONENT>`
+
+Run the command in a specific component when in a workspace
+
+`<COMPONENT>` the component to execute the commmand in
+
+###### `-p <PATH>`, `--path <PATH>`
+
+Path to the folder containing the [component.toml](./../../start-here/configuration/componenttoml/#commands).
+Will search for the command definition in the current folder if not set.
+
+`<PATH>` the path to the folder where the command definition exists */}
+
+{/* ### Build [OPTIONS] [PATH]
+
+```sh frame=none
+heim build [OPTIONS] [PATH]
+```
+
+Build a module
+
+`[PATH]` the path to the module to build
+
+###### [Global Flags](#global)
+
+###### `-s`, `--skip-metadata`
+
+Skip adding the heim metadata to the module
+
+###### `-d`, `--dev`
+
+<details>
+  <summary>Aliases</summary>
+  `--debug`
+</details>
+Build module as dev with debug
+
+###### `-c`, `--component <COMPONENT>`
+
+Target a specific component in a workspace or deployment unit
+
+`<COMPONENT>` the component to target
+
+###### `-f`, `--file <FILE>`
+
+<details>
+<summary>Aliases</summary>
+`--module <FILE>`  
+`--wasm <FILE>`
+</details>
+Add the heim metadata to an already built wasm module
+
+`<FILE>` the path to the .wasm file
+
+###### `-i`, `--include-deployment-metadata`
+
+Add extra deployment metadata when building the module
+
+###### `--deploy`
+
+Deploy the module after build is completed
+
+See [deploy command](#deploy-options-module) for information about deploy flags */}
+
+{/* ### Template [OPTIONS] \<COMMAND\>
+
+```sh frame=none
+heim template <COMMAND>
+```
+
+Template subcommands
+
+`<COMMAND>` the subcommand to execute
+
+#### List [OPTIONS]
+
+```sh frame=none
+heim template list
+```
+
+List all installed templates
+
+#### Install [OPTIONS] \<--url \<GIT_URL_SSH\>|--path \<PATH\>\> \<TEMPLATE_NAME\>
+
+```sh frame=none
+heim template install [OPTIONS] <--url <GIT_URL_SSH>|--path <PATH>> <TEMPLATE_NAME>
+```
+
+Install a template
+
+`<TEMPLATE_NAME>` the name of the template to install
+
+###### `-u <GIT_URL_SSH>`, `--url <GIT_URL_SSH>`
+
+The git ssh url to install the template from
+
+`<GIT_URL_SSH>` the git ssh url
+
+###### `-b <GIT_BRANCH>`, `--branch <GIT_BRANCH>`
+
+The git branch to use when installing the template
+
+`<GIT_BRANCH>` the git branch
+
+###### `-p <PATH>`, `--path <PATH>`
+
+The local path to install the template from
+
+`<PATH>` the local path
+
+#### Uninstall [OPTIONS] \<TEMPLATE_NAME\>
+
+```sh frame=none
+heim template uninstall <TEMPLATE_NAME>
+```
+
+Uninstall a template
+
+`<TEMPLATE_NAME>` the name of the template to uninstall
+
+#### Test [OPTIONS] \<TEMPLATE_FILE\> [TEMPLATE_PATH]
+
+```sh frame=none
+heim template test <TEMPLATE_FILE> [TEMPLATE_PATH]
+```
+
+Test render a template
+
+`<TEMPLATE_FILE>` the name of the template file to render  
+`[TEMPLATE_PATH]` path to the template folder */}
+
+{/* ### Debug [OPTIONS] \<COMMAND\>
+
+```sh frame=none
+heim debug <COMMAND>
+```
+
+Debug subcommands
+
+`<COMMAND>` the subcommand to execute
+
+#### Wat [OPTIONS] \<MODULE_PATH\> [OUTPUT_PATH]
+
+```sh frame=none
+heim debug wat [OPTIONS] <MODULE_PATH> [OUTPUT_PATH]
+```
+
+Output WASM text format
+
+`<MODULE_PATH>` the path to the module  
+`[OUTPUT_PATH]` the file to output the wat text to, defaults to `./module.wat`
+
+###### `-o`, `--optimized`
+
+Output optimized wat
+
+###### `-p`, `--print`
+
+Print wat to stdout
+
+#### Imports [OPTIONS] \<MODULE_PATH\>
+
+```sh frame=none
+heim debug imports <MODULE_PATH>
+```
+
+List all the modules imports
+
+`<MODULE_PATH>` the path to the module
+
+#### Exports [OPTIONS] \<MODULE_PATH\>
+
+```sh frame=none
+heim debug exports <MODULE_PATH>
+```
+
+List all the modules exports
+
+`<MODULE_PATH>` the path to the module
+
+#### Metadata [OPTIONS] \<MODULE_PATH\>
+
+```sh frame=none
+heim debug metadata <MODULE_PATH>
+```
+
+Print all the metadata that is set on the module
+
+`<MODULE_PATH>` the path to the module */}
+
+{/* ### Cache [OPTIONS] \<COMMAND\>
+
+```sh frame=none
+heim cache [OPTIONS] <COMMAND>
+```
+
+Cache subcommands
+
+`<COMMAND>` the subcommand to execute
+
+#### List [OPTIONS] [FILTER]
+
+```sh frame=none
+heim cache list [OPTIONS] [FILTER]
+```
+
+List modules currently in the cache
+
+`[FILTER]` filter based on module name, checks if the component name contains the filter string
+
+###### `-s`, `-has-versions`
+
+Only print modules that have versions
+
+###### `-n`, `--no-versions`
+
+Limits the printout to only display the component and total size
+
+###### `--limits <COMPONENTS> <VERSIONS>`
+
+Limit the print outs of components to the value of COMPONENTS  
+Limits the print outs of versions per component to the value of VERSIONS
+
+Defaults to `--limits 0 0` where 0 equals no limit
+
+`<COMPONENTS>` the number of components to print  
+`<VERSIONS>` the number of versions to print
+
+#### Purge [OPTIONS] [FILTER]
+
+```sh frame=none
+heim cache purge [OPTIONS] [FILTER]
+```
+
+Purge modules from the cache
+
+`[FILTER]` filter based on module name, checks if the component name contains the filter string
+
+###### `--dry-run`
+
+Print the items that would be removed when running purge
+
+#### Metadata \<NAME\> [VERSION]
+
+```sh frame=none
+heim cache metadata <NAME> [VERSION]
+```
+
+Print module metadata
+
+`<NAME>` the name of the module to print metadata for  
+`[VERSION]` the version of the module to print metadata for, uses latest if not specified */}
