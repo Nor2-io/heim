@@ -1,0 +1,131 @@
+---
+title: "Install Heim"
+description: Instructions for installing heim
+date: 2024-12-04
+lastmod: 2024-12-19
+---
+
+import {
+  Tabs,
+  TabItem,
+  Badge,
+  Code,
+  Steps,
+  CardGrid,
+  LinkCard,
+  LinkButton,
+  Icon,
+} from "@astrojs/starlight/components";
+
+## Prerequisites
+
+- **Language-specific tools** - dotnet, rust
+- **Text Editor** - [VsCode](https://code.visualstudio.com/) is a great option with language-specific plugins
+- **Terminal** - Heim is accessed through its command-line interface
+
+<br />
+
+## Language-specific tools
+
+<Tabs>
+    <TabItem label="C-Sharp" icon="seti:c-sharp">
+        <LinkButton href="https://dotnet.microsoft.com/en-us/download">Install Dotnet</LinkButton>  <Badge text="requirement: .NET 10.0 preview or higher" variant="caution" />
+    </TabItem>
+    <TabItem label="Python" icon="seti:python">
+        <LinkButton href="https://www.python.org/downloads/">Install Python</LinkButton>
+        <Steps>
+            <ol>
+                <li>
+                    Install Python
+                    <Tabs syncKey="os">
+                        <TabItem label="windows" icon="seti:windows">
+                            https://www.python.org/downloads/
+                        </TabItem>
+                        <TabItem label="macos" icon="apple">
+                            <Code lang="sh" frame="none" code="brew install python" />
+                        </TabItem>
+                        <TabItem label="linux" icon="linux">
+                            <Code lang="sh" frame="none" code="sudo apt-get install python3" />
+                        </TabItem>
+                    </Tabs>
+                </li>
+                <li>
+                    Install componentize-py
+                    <Code code="pip install componentize-py"  lang="sh" frame="none" />
+                </li>
+            </ol>
+        </Steps>
+    </TabItem>
+    <TabItem label="Rust" icon="seti:rust">
+        <LinkButton href="https://www.rust-lang.org/tools/install">Install Rust</LinkButton>  <Badge text="requirement: version 1.82 or newer" variant="caution" />
+        <Steps>
+            <ol>
+                <li>
+                    Install Rust
+                    <Tabs syncKey="os">
+                        <TabItem label="windows" icon="seti:windows">
+                            https://forge.rust-lang.org/infra/other-installation-methods.html
+
+                            If you don't install msvc via rustup or already have it preinstalled then you need to install msvc.
+
+                            https://rust-lang.github.io/rustup/installation/windows-msvc.html
+                        </TabItem>
+                        <TabItem label="macos" icon="apple">
+                            <Code lang="sh" frame="none" code="curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh" />
+                        </TabItem>
+                        <TabItem label="linux" icon="linux">
+                            <Code lang="sh" frame="none" code="curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh" />
+                        </TabItem>
+                    </Tabs>
+                </li>
+                <li>
+                    Install wasm target
+                    <Code code="rustup target add wasm32-wasip2"  lang="sh" frame="none" />
+                </li>
+            </ol>
+        </Steps>
+    </TabItem>
+    <TabItem label="Typescript" icon="seti:typescript">
+        <LinkButton href="https://nodejs.org/en/download/package-manager">Install NodeJs</LinkButton>
+    </TabItem>
+    <TabItem label="C" icon="seti:c">
+        <ul style="list-style-type: none; padding: 0; margin: 0;">
+            <li>
+                <LinkButton href="https://github.com/WebAssembly/wasi-sdk/releases">Download Wasi-SDK</LinkButton>  <Badge text="requirement: 16.0.0 or higher" variant="caution" />
+            </li>
+            <li>
+                <LinkButton href="https://github.com/bytecodealliance/wit-bindgen/releases">Download Wit-bindgen</LinkButton>  <Badge text="requirement: 0.12.0 or higher" variant="caution" />
+            </li>
+        </ul>
+    </TabItem>
+    <TabItem label="Go" icon="seti:go">
+        <ul style="list-style-type: none; padding: 0; margin: 0;">
+            <li>
+                <LinkButton href="https://go.dev/doc/install">Download Go</LinkButton>  <Badge text="requirement: 1.20.0 or higher" variant="caution" />
+            </li>
+            <li>
+                <LinkButton href="https://tinygo.org/getting-started/install/">Download TinyGo</LinkButton>  <Badge text="requirement: 0.33.0 or higher" variant="caution" />
+            </li>
+        </ul>
+    </TabItem>
+</Tabs>
+
+<br />
+
+## Installation
+
+<CardGrid>
+  <LinkCard title="Windows" href="./windows/" />
+  <LinkCard title="MacOS" href="./macos/" />
+  <LinkCard title="Linux" href="./linux/" />
+</CardGrid>
+
+<br />
+
+## Next Steps
+
+<LinkCard
+  title="Getting Started"
+  href="./../../start-here/getting-started/#start-heim-runtime"
+  description="Start using Heim"
+/>

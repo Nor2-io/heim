@@ -1,0 +1,765 @@
+---
+title: "Handling multiple paths in a Rust Application"
+date: 2024-12-18
+lastmod: 2024-12-19
+description: This guide will help you get up and running with a basic rust application that handles multiple paths.
+---
+
+import {
+  FileTree,
+  Card,
+  CardGrid,
+  LinkCard,
+  Steps,
+} from "@astrojs/starlight/components";
+
+## Prerequisites
+
+<LinkCard
+  title="Getting Started with Heim"
+  href="./../../../start-here/getting-started/"
+/>
+
+- Language-specific tools - [Install Heim Prerequisites](./../../../start-here/installation/#prerequisites)
+- Heim cli and runtime - [Install Heim](./../../../start-here/installation/#installation)
+- Text Editor - VsCode is a great option with language-specific plugins
+- Terminal - Heim is accessed through its [command-line interface](./../../../cli/cli-reference/)
+
+## Guide
+
+<br />
+
+:::tip[Basic Rust Application guide]
+
+If you haven't gone through it already, we recommend having a look at our [_Basic Rust Application example_](./Basic-Rust-Application.mdx).
+
+In the Basic Rust Application example, we go through all the steps needed for creating a Rust application like the one we are about to make in this document, from template to deployment.
+
+:::
+
+:::tip[Code]
+The full code is available in our Github repository [**here**](https://github.com/Nor2-io/heim/tree/main/examples/Rust)
+:::
+
+<br />
+
+<Steps>
+    <ol>
+        <li>
+            Create a new project from the **rust-http** template.
+
+            <details style={"border: none"}>
+                <summary>read more</summary>
+
+                ### Using a template
+
+                Start by running `heim new` to create a project from a template.
+
+                <br/>
+
+                :::note[template]
+                In this guide we will be using the **rust-http** template.
+                :::
+
+                <br/>
+
+                Use the up/down arrow keys to select the template and press enter:
+
+                ``` sh frame=terminal title="Heim Cli"
+                heim@system:~/repos$ heim new
+                ? Select template:  ›
+                csharp-http
+                csharp-http-async
+                ...
+                ❯ rust-http
+                ```
+
+                <br/>
+
+                :::tip
+                The first part can be done by running one command:
+
+                `heim new rust-http`
+
+                Use `heim templates list` to get a list of available templates.
+                :::
+
+                <br/>
+
+                <br/>
+
+                Next, we will choose the [http method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) that the application will respond on.
+
+                <br/>
+
+                We want to our application to respond to all types of methods.
+
+                <br/>
+
+                For this we will choose the value of `ALL`:
+
+                ``` sh frame=terminal title="Heim Cli"
+                ✔ Select template:  · rust-http
+                ? Http trigger method POST/GET, Default (GET) › ALL
+                ```
+
+                <br/>
+
+                :::note[HTTP method]
+
+                You could set the application to use any [HTTP method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods).
+
+                :::
+
+                <br/>
+
+                <br/>
+
+                Next we need to choose the path that the application will listen on. We'll also set the HTTP method. The path and HTTP method will be used when we call the application, later.
+
+                We will use `*` as a wildcard to allow any subpath for the trigger, and the HTTP method `ALL`, so that any HTTP method is usable.
+
+                <br/>
+
+                ``` sh frame=terminal title="Heim Cli"
+                ✔ Select template:  · rust-http
+                ✔ Http trigger method POST/GET, Default · ALL
+                ? Http trigger path /??? , Default (/hello) › /multi-path-app/*
+                ```
+
+                <br/>
+
+                <br/>
+
+                Last we will need the name and version of the application:
+
+                ``` sh frame=terminal title="Heim Cli"
+                ✔ Select template:  · rust-http
+                ✔ Http trigger method POST/GET, Default · ALL
+                ✔ Http trigger path /??? , Default · /multi-path-app/*
+                ? Package name, (Required) › multi-path-app
+
+                ...
+                ? Input a string for value version, Default (0.1.0) ›
+
+                Rendered Template: ""/tmp/heimQ2z7DE/multi-path-app/component.toml""
+                Rendered Template: ""/tmp/heimQ2z7DE/multi-path-app/application.toml""
+                Rendered Template: ""/tmp/heimQ2z7DE/multi-path-app/src/lib.rs""
+                Rendered Template: ""/tmp/heimQ2z7DE/multi-path-app/Cargo.toml""
+                [00:00:00] ########################################       5/5       Success
+                INFO [ Heim new ] New component created: Some("/home/heim/repos/multi-path-app")
+                ```
+
+                <br/>
+
+                <br/>
+
+                <br/>
+
+            </details>
+
+            <br/>
+
+        </li>
+        <li>
+            Have a look at the newly created project folder.
+
+            You'll have an application folder with this file structure:
+
+            <FileTree>
+                - src/
+                    - lib.rs
+                    - .gitignore
+                - Cargo.toml
+                - **component.toml**
+                - **application.toml**
+            </FileTree>
+
+            <details style={"border: none"}>
+                <summary>read more</summary>
+
+                ### Examining file structure
+
+                Now we have a project ready to go. Lets open the project in your text editor and see what we have.
+
+                <br/>
+
+                <br/>
+
+                #### component.toml
+
+                The [component.toml](./../../../start-here/configuration/componenttoml/) file, defines a component, and one or more components make up an application in Heim.
+
+                <br/>
+
+                `component.toml`
+                ```toml
+                name = "multi-path-app" # Component name
+                version = "0.1.0" # Component language
+
+                [commands] # Custom commands that can be used from the heim cli
+                run = "wasmtime serve -S cli target/wasm32-wasip1/debug/multi-path-app.wasm --addr=127.0.0.1:8080"
+                run_production = "wasmtime serve -S cli target/wasm32-wasip1/release/multi-path-app.wasm --addr=127.0.0.1:8080"
+
+
+                [build.dev] # Dev build command and output
+                build = "cargo component build --target=wasm32-wasip1"
+                wasm_path = "target/wasm32-wasip1/debug/multi_path_app.wasm"
+
+                [build.prod] # Prod build command and output
+                build = "cargo component build --target=wasm32-wasip1 --release"
+                wasm_path = "target/wasm32-wasip1/release/multi_path_app.wasm"
+                ```
+                _a simple component.toml, with explanatory comments_
+
+                <br/>
+
+                <LinkCard title="Read more about component.toml" href="./../../../start-here/configuration/componenttoml/" />
+
+                <br/>
+
+                <br/>
+
+                #### application.toml
+
+                The [application.toml](./../../../start-here/configuration/applicationtoml/) is what defines an application. A application.toml is required for deploying an application to Heim.
+
+                <br/>
+
+                `application.toml`
+                ```toml
+                # application.toml
+                name = "multi-path-app" # application name
+                component_target = 'multi-path-app:0.1.0' # component to target
+
+                [[trigger]] # Trigger definition
+                type = 'http'
+                path = '/multi-path-app/*'
+                method = 'ALL'
+                ```
+
+                <br/>
+
+                <LinkCard title="Read More about component.toml" href="./../../../start-here/configuration/applicationtoml/" />
+
+                <br/>
+
+                <br/>
+
+                <br/>
+
+            </details>
+
+            <br/>
+
+        </li>
+        <li>
+            Have a look at the newly created project folder.
+
+            Open `src/lib.rs` to check the code. Deploy and start the application by using the Heim CLI.
+
+            <details style={"border: none"}>
+                <summary>read more</summary>
+
+                ### Get started with the new application
+
+
+                Open `src/lib.rs` and take a look at the code:
+
+                ```rust
+                # src/lib.rs
+                use waki::{handler, ErrorCode, Request, Response};
+
+                #[handler]
+                fn hello(req: Request) -> Result<Response, ErrorCode> {
+                    Response::builder()
+                        .status_code(200)
+                        .body("Hello World")
+                        .build()
+                }
+                ```
+
+                <br/>
+
+                <br/>
+
+                Now, we want to start the application. Read on to learn the steps needed to start an application.
+
+                <br/>
+
+                <Steps>
+                    <ol>
+                        <li>
+
+                            <br/>
+
+                            Run [heim start](./../../../cli/cli-reference/#start-options), to start the heim runtime:
+
+                            ```sh title="heim runtime"
+                            heim@system:~/repos$ heim start
+
+                            Starting Runtime with Config:
+                            ...
+
+                            Http server listening on: http://127.0.0.1:3000
+                            Heim portal: http://127.0.0.1:3000/heim/portal/
+                            ```
+
+                            <br/>
+
+                            Note that the [Heim portal](./../../../start-here/heim-portal/) comes included with any Heim installation, and that it will be available on [`http://127.0.0.1:3000/heim/portal/`](http://127.0.0.1:3000/heim/portal/) once you've installed Heim.
+
+                            <br/>
+
+                            <br/>
+
+                            <br/>
+
+                        </li>
+                        <li>
+
+                            <br/>
+
+                            To build the application and deploy it to our local-instance, we will run [heim deploy](./../../../cli/cli-reference/#deploy-options-module). By default, this will create a *debug* build, but we can change it to a *release* build with the `--release` flag:
+
+                            
+                        ```sh title="heim cli"
+                        heim@system:~/repos$ heim deploy
+                        INFO [ heim_cli::wasm::build ] Building Component: myapp
+                            Compiling myapp v0.1.0 (/home/work/repos/myapp)
+                            ...
+                            Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.18s
+                        Creating component target/wasm32-wasip2/debug/myapp.wasm
+                        INFO [ heim_registry::registry ] "myapp":"0.1.0":cb4abe161542a7b146fe27c5f5cdb60970d68a369f5703bde252664ddbe2eedf
+                        INFO [ Heim::Deploy ] Heim application `myapp` is now built and written to registry.
+                        INFO [ Heim::Pipeline ] Starting pipeline 'Deploy application'
+                        INFO [ Heim::Pipeline ] Storing unoptimized component state
+                        INFO [ Heim::Pipeline ] Checking if defined regions in app definition is valid
+                        INFO [ Heim::Pipeline ] Continuing with localhost region heim-localhost
+                        INFO [ Heim::Pipeline ] Getting region specific application environment values
+                        INFO [ Heim::Pipeline ] Set environment values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Getting region specific application scaling values
+                        INFO [ Heim::Pipeline ] Set scaling values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Getting capabilities
+                        INFO [ Heim::Pipeline ] Set capabilities values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Getting triggers
+                        INFO [ Heim::Pipeline ] Set trigger values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Component environment values are valid for all regions
+                        INFO [ Heim::Pipeline ] Checking for region with changes to build
+                        INFO [ Heim::Pipeline ] Region "heim-localhost" has been changed and will be built
+                        INFO [ Heim::Pipeline ] Storing component and optimized component
+                        INFO [ Heim::Pipeline ] Stored component at ''
+                        INFO [ Heim::Pipeline ] Stored optimized component at ''
+                        INFO [ Heim::Pipeline ] Storing region states
+                        INFO [ Heim::Pipeline ] Stored state for region(s) heim-localhost successfully
+                        INFO [ Heim::Pipeline ] Creating and caching application(s)
+                        INFO [ Heim::Pipeline ] Creating and caching application(s) for region(s) heim-localhost
+                        INFO [ Heim::Pipeline ] Created application with hash 8aba8efca7c309fe7cafce25df43fe78bbe9d0479f9b709cea97f9d507048a11 for region(s) heim-localhost
+                        INFO [ Heim::Pipeline ] Application has been deployed for region(s) heim-localhost
+                        INFO [ Heim::Pipeline ] Pipeline 'Deploy application' finished with status 'Success'
+                        INFO [ Heim::Deploy ] Heim deploy pipeline was successful
+                        INFO [ Heim::Deploy ] Application is accaccessible at:
+                        INFO [ Heim::Deploy ] [GET] http://127.0.0.1:3000/myapp
+                        INFO [ Heim::Deploy ] Written and deployed application `myapp`.
+                        ```
+                        <br/>
+
+                        <br/>
+
+                        From here, you can see that we are able to access the application on `http://127.0.0.1:3000/myapp`:
+
+                        ```sh title="curl"
+                        heim@system:~/repos$ curl http://127.0.0.1:3000/myapp
+                        Hello World!
+                        ```
+
+                        
+                        <br/>
+
+                        <br/>
+
+                        To deploy the application to the cloud instance, we will run [heim deploy](./../../../cli/cli-reference/#deploy-options-module) with the `--cloud` flag.
+                        This will generate a *release* build as default, but it can be changed to a *debug* with the the `--dev` flag.
+
+                        This will deploy the application to your subdomain at `my-subdomain.cloud.heim.dev`
+
+                        ```sh title="heim cli"
+                        heim@system:~/repos$ heim deploy --cloud
+
+                        INFO [ heim_registry::registry ] "myapp":"0.1.0":02f6d7d3c34210438f293efc1ff2f8e9494f783a402e5dcbe6a308fea40d870e
+                        INFO [ Heim::Deploy ] Heim application `myapp` is now built and written to registry.
+                        INFO [ Heim::Pipeline ] Starting pipeline 'Deploy application'
+                        INFO [ Heim::Pipeline ] Storing unoptimized component state
+                        INFO [ Heim::Pipeline ] Checking if defined regions in app definition is valid
+                        INFO [ Heim::Pipeline ] Continuing with localhost region heim-localhost
+                        INFO [ Heim::Pipeline ] Getting region specific application environment values
+                        INFO [ Heim::Pipeline ] Set environment values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Getting region specific application scaling values
+                        INFO [ Heim::Pipeline ] Set scaling values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Getting capabilities
+                        INFO [ Heim::Pipeline ] Set capabilities values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Getting triggers
+                        INFO [ Heim::Pipeline ] Set trigger values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Component environment values are valid for all regions
+                        INFO [ Heim::Pipeline ] Checking for region with changes to build
+                        INFO [ Heim::Pipeline ] Region "heim-localhost" has been changed and will be built
+                        INFO [ Heim::Pipeline ] Optimizing base component
+                        INFO [ Heim::Pipeline ] Optimized base component, size before optimization: 2881425 bytes, size after optimization: 2278867 bytes
+                        INFO [ Heim::Pipeline ] Storing component and optimized component
+                        INFO [ Heim::Pipeline ] Stored component at ''
+                        INFO [ Heim::Pipeline ] Stored optimized component at ''
+                        INFO [ Heim::Pipeline ] Storing region states
+                        INFO [ Heim::Pipeline ] Stored state for region(s) heim-localhost successfully
+                        INFO [ Heim::Pipeline ] Creating and caching application(s)
+                        INFO [ Heim::Pipeline ] Creating and caching application(s) for region(s) heim-localhost
+                        INFO [ Heim::Pipeline ] Created application with hash 62fd854418968a7c0cc383e962382dfc8e2d420b7fa5a4d48c6058ebb8544a05 for region(s) heim-localhost
+                        INFO [ Heim::Pipeline ] Application has been deployed for region(s) heim-localhost
+                        INFO [ Heim::Pipeline ] Pipeline 'Deploy application' finished with status 'Success'
+                        INFO [ Heim::Deploy ] Heim deploy pipeline was successful
+                        INFO [ Heim::Deploy ] Application is accaccessible at:
+                        INFO [ Heim::Deploy ] [GET] https://my-subdomain.cloud.heim.dev/myapp
+                        INFO [ Heim::Deploy ] Written and deployed application `myapp`.
+                        ```
+
+                        <br/>
+
+                        <br/>
+
+                        And, in the heim runtime you will see something like this, if you started the runtime with the `--verbose` flag:
+
+                        ```log "app_id" "uri" "path" "method" "domain"
+                        INFO WasmComponentHandler{
+                            app_id="localhost:00000000-0000-0000-0000-000000000000:00000000-0000-0000-0000-000000000000:myapp:bbcb756cbf72e572fd47f3c299f44e1d083522aaa2696c3b0b24653deb884d3c"
+                            uri=/myapp
+                        }:
+                        heim_runtime::services::handlers::wasm_component_handler: 48:
+                        app_id="localhost:00000000-0000-0000-0000-000000000000:00000000-0000-0000-0000-000000000000:myapp:bbcb756cbf72e572fd47f3c299f44e1d083522aaa2696c3b0b24653deb884d3c"
+                        uri=/myapp method=GET
+                        trigger=Trigger {
+                            app_id: AppId("localhost:00000000-0000-0000-0000-000000000000:00000000-0000-0000-0000-000000000000:myapp:bbcb756cbf72e572fd47f3c299f44e1d083522aaa2696c3b0b24653deb884d3c"),
+                            path: "/myapp",
+                            method: "GET",
+                            function_target: None,
+                            hash: "",
+                            domain: "127.0.0.1"
+                        }
+                        ```
+
+                        <br/>
+
+                        The Heim runtime output above summarizes all the basic information about your application.
+
+                        <br/>
+
+                        <br/>
+
+                        </li>
+                    </ol>
+                </Steps>
+            </details>
+        </li>
+        <li>
+
+            Now that we've gone through the basic steps required to create and start a new application, it's time to add the functionality we need for this particular application.
+
+            <br/>
+
+            Let's add a simple router handling multiple paths, with json.
+
+            <br/>
+
+            We'll also add [serde](https://crates.io/crates/serde) and [serde_json](https://crates.io/crates/serde_json) to the `Cargo.toml` you'll find in the application folder. This will allow us to easily work with json.
+
+            Lastly, we also want to add support for calling an external api by HTTP from our application.
+
+            <br/>
+
+            `Cargo.toml`
+            ```diff lang=toml
+            [package]
+            name = "multi-path-app"
+            version = "0.1.0"
+            edition = "2021"
+
+            [lib]
+            crate-type = ["cdylib"]
+
+            [package.metadata.component]
+            package = "multi-path-app:myapp"
+            proxy = false
+
+            [dependencies]
+            waki = { version = "0.5.0", features = ["json"] }
+            +serde = { version = "1.0.216", features = ["derive"] }
+            +serde_json = "1.0.133"
+
+            # reduce wasm binary size
+            [profile.release]
+            lto = true
+            strip = "symbols"
+            ```
+
+            <br/>
+
+            <br/>
+
+            Add the new section called `capabilities` to the `application.toml`. This will allow our application to call outside URLs:
+
+            `application.toml`
+            ```diff lang=toml
+            name = "multi-path-app"
+            component_target = 'multi-path-app:latest'
+
+            [trigger.http]
+            type = 'http'
+            +path = '/multi-path-app/*'
+            +method = 'ALL'
+            -path = '/hello'
+            -method = 'GET'
+
+            +[capabilities]
+            +allowed-outgoing-url = ["https://dummyjson.com/*"]
+            ```
+
+            <br/>
+
+            <br/>
+
+            Now, it's time to update our code. We'll implement a simple router and add conditions based on the called path and HTTP method:
+
+            `src/lib.rs`
+            ```diff lang=rust
+            +use serde::{Deserialize, Serialize};
+            +use std::{collections::HashMap, time::Duration};
+            +use waki::{handler, header::ACCEPT, header::CONTENT_TYPE, ErrorCode, Method, Request, Response};
+            -use waki::{handler, ErrorCode, Request, Response};
+
+            +pub const GET_QUERY_PATH: &str = "/multi-path-app/v1/get";
+            +pub const POST_BODY_PATH: &str = "/multi-path-app/v1/post";
+
+            +#[derive(Debug, Clone, Serialize, Deserialize)]
+            +pub struct SearchQuery {
+            +    search_text: String,
+            +    result_limit: i32,
+            +}
+
+
+            #[handler]
+            fn hello(req: Request) -> Result<Response, ErrorCode> {
+            -    Response::builder()
+            -        .status_code(200)
+            -       .body("Hello World")
+            -        .build()
+            +    let path = &req.path().to_string();
+            +    let query = &req.query();
+            +    let method = &req.method();
+            +
+            +    //Here we have implemented a really simple router based on method and path in the request.
+            +    match (method, path.as_str()) {
+            +        (Method::Post, POST_BODY_PATH) => {
+            +            let body = match &req.body() {
+            +                Ok(body_value) => body_value.clone(),
+            +                Err(err) => {
+            +                    return bad_request(format!("Invalid body request sent, {err:#?}").as_str())
+            +                }
+            +            };
+            +            post_body_handler(&body)
+            +       }
+            +        (Method::Get, GET_QUERY_PATH) => get_body_handler(query),
+            +        _ => not_found(),
+            +    }
+            }
+            +
+            +/// Not found response
+            +pub fn not_found() -> Result<Response, ErrorCode> {
+            +    Response::builder()
+            +        .status_code(404)
+            +        .body("NOT FOUND!".to_string())
+            +        .build()
+            +}
+            +
+            +/// Bad request response
+            +pub fn bad_request(msg: &str) -> Result<Response, ErrorCode> {
+            +    Response::builder()
+            +        .status_code(400)
+            +        .body(msg.to_string())
+            +        .build()
+            +}
+            +
+            +pub fn get_body_handler(query: &HashMap<String, String>) -> Result<Response, ErrorCode> {
+            +    let _search: String = match query.get("search") {
+            +        Some(search) => search.to_string(),
+            +        None => return bad_request("We are missing the required query param called Search"),
+            +    };
+            +
+            +    let client = waki::Client::new();
+            +    let result = client
+            +        .get("https://dummyjson.com/recipes/1")
+            +        .headers([("Content-Type", "application/json"), ("Accept", "*")])
+            +        .connect_timeout(Duration::from_secs(1))
+            +        .send()
+            +        .and_then(|res| res.body().map_err(|e| e.into()))
+            +        .and_then(|body| String::from_utf8(body).map_err(|e| e.into()));
+            +    let body = match result {
+            +        Ok(text_body) => text_body,
+            +        Err(err) => format!("We failed to retrieve the response: {err}"),
+            +    };
+            +
+            +    Response::builder()
+            +        .status_code(200)
+            +        .headers([(CONTENT_TYPE, "application/json")])
+            +        .body(body)
+            +        .build()
+            +}
+            +
+            +/// Post body response
+            +pub fn post_body_handler(body: &Vec<u8>) -> Result<Response, ErrorCode> {
+            +    match serde_json::from_slice::<SearchQuery>(&body) {
+            +        Ok(value) => Response::builder()
+            +            .status_code(200)
+            +            .body(format!(
+            +                "We received the following search query: {value:#?}"
+            +            ))
+            +            .build(),
+            +        Err(err) => bad_request(&format!("Failed deserialize the json body: {err}")),
+            +    }
+            +}
+            ```
+
+            <br/>
+
+            <br/>
+
+            Since the Heim runtime is already running, we just need to build and deploy, using the Heim CLI:
+
+            ```sh title="heim  cli"
+            heim@system:~/repos$ heim deploy
+            INFO [ heim_cli::wasm::build ] Building Component: multi-path-app
+                Compiling multi-path-app v0.1.0 (/home/work/repos/multi-path-app)
+                ...
+                Finished `release` profile [optimized] target(s) in 0.05s
+            INFO [ heim_cli::wasm::wasmodule ] multi-path-app:0051d2ecfc1866c7a33b310a8df4691141655dba34086e60e4a23ebf78dc2525
+            INFO [ Heim deploy ] Built and published multi-path-app/0051d2ecfc1866c7a33b310a8df4691141655dba34086e60e4a23ebf78dc2525
+            INFO [ Heim deploy ] Deployed to Heim-portal-backend multi-path-app/0051d2ecfc1866c7a33b310a8df4691141655dba34086e60e4a23ebf78dc2525
+            INFO [ Heim deploy ] Access at: http://127.0.0.1:3000/multi-path-app/* with Method ALL
+            INFO [ Heim::Publish ] Written and deployed module multi-path-app to runtime for profile local
+            ```
+            ```sh title="curl"
+            heim@system:~/repos$ curl http://127.0.0.1:3000/multi-path-app/v1/post -X POST
+            {"error":"Failed deserialize the json body","name":null,"msg":null}
+            heim@system:~/repos$ curl http://127.0.0.1:3000/multi-path-app/v1/post -d '{ "search_text": "heim", "result_limit": 2}'
+            {"We received the following search query: { search_text: heim, result_limit: 2}"}
+            ```
+
+            <br/>
+
+            <br/>
+
+            <br/>
+
+        </li>
+        <li>
+
+            <br/>
+
+            When we are done, we can use the shortcut `Ctrl+C` to shut down the runtime.
+
+            <br/>
+
+            To clean up any resources from the guide you can run `heim clear`. This will remove all data from the cache.
+
+            <br/>
+
+            :::caution[heim clear]
+            You will need to redeploy the application the next time you want to run it, if you use the `heim clear` command.
+            :::
+
+            :::tip[Code]
+            The full code is available in our Github repository [**here**](https://github.com/Nor2-io/heim/tree/main/examples/Rust)
+            :::
+
+            <br/>
+
+            <br/>
+
+            <br/>
+
+        </li>
+    </ol>
+
+</Steps>
+
+<br />
+
+<br />
+
+<br />
+
+---
+
+<br />
+
+## Summary
+
+<br />
+
+1. - run `heim new` and use the rust-http `template` to create a new application
+
+   <br />
+
+   <br />
+
+2. - open the created application folder/project in your text editor and check out the configuration files
+
+   <br />
+
+   <br />
+
+3. - open `lib.rs` and have a look at the code
+   - run `heim start` to start the Heim runtime
+   - run `heim build` to build the application.
+   - run `heim deploy --local ${application_name}` to deploy the application while targeting the local runtime
+
+   <br />
+
+   <br />
+
+4. - edit the `Cargo.toml` file to add useful dependencies
+   - edit the `component.toml` file to add _environment variables_
+   - edit the `application.toml` file to change the _HTTP method_
+   - edit the `application.toml` file to change the _trigger path_
+   - edit the `application.toml` file to set environment variable values
+   - edit the `src/lib.rs` file to use new environment variables
+   - edit the `src/lib.rs` file to set up return and accept values
+   - _deploy_ the application again to see your changes
+
+   {" "}
+   <br />
+
+   {" "}
+   <br />
+
+5. - use the `Ctrl+C` shortcut to shut down the Heim runtime
+   - use the `heim clear` command to remove all data from cache
+
+   {" "}
+   <br />
+
+   :::caution[heim clear]
+   You will need to redeploy the application the next time you want to run it, if you use the `heim clear` command.
+   :::
+
+<br />
+
+<br />
+
+---
+
+## References
+
+- [serde](https://crates.io/crates/serde)
+- [serde_json](https://crates.io/crates/serde_json)
+- [waki](https://crates.io/crates/waki)
+- [heim cli](./../../../cli/cli-reference/)
+- [component.toml](./../../../start-here/configuration/componenttoml/)
+- [application.toml](./../../../start-here/configuration/applicationtoml/)

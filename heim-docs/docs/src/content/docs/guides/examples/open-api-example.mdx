@@ -1,0 +1,403 @@
+---
+title: "OpenAPI example"
+date: 2025-07-07
+lastmod: 2025-07-07
+description: This is an example of how a OpenAPI schema can be defined.
+---
+
+import {
+  FileTree,
+  Card,
+  CardGrid,
+  LinkCard,
+  Steps,
+} from "@astrojs/starlight/components";
+
+## Prerequisites
+
+<LinkCard
+  title="Getting Started with Heim"
+  href="./../../../start-here/getting-started/"
+/>
+
+- Language-specific tools - [Install Heim Prerequisites](./../../../start-here/installation/#prerequisites)
+- Heim cli and runtime - [Install Heim](./../../../start-here/installation/#installation)
+- Text Editor - VsCode is a great option with language-specific plugins
+- Terminal - Heim is accessed through its [command-line interface](./../../../cli/cli-reference/)
+
+## Guide
+
+<Steps>
+    <ol>
+        <li>
+            :::tip[Code]
+            The full code is available in our Github repository [**here**](https://github.com/Nor2-io/heim/tree/main/examples/CSharp)
+            :::
+
+            Prepare your OpenAPI specification or use this one below and save it to a file called `specification.json`:
+            ```json
+            {
+                "openapi": "3.0.3",
+                "info": {
+                    "title": "Demo Geolocation",
+                    "version": "1.0.0",
+                    "description": "API for geolocation services including image processing, country retrieval, and sun timing."
+                },
+                "tags": [
+                    {
+                    "name": "geo-location",
+                    "description": "Operations related to geolocation services."
+                    }
+                ],
+                "components": {
+                    "schemas": {
+                    "Coordinates": {
+                        "type": "object",
+                        "properties": {
+                        "latitude": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "Latitude of the location."
+                        },
+                        "longitude": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "Longitude of the location."
+                        }
+                        },
+                        "required": ["latitude", "longitude"]
+                    },
+                    "GeoLocationResponse": {
+                        "type": "object",
+                        "properties": {
+                        "latitude": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "longitude": {
+                            "type": "number",
+                            "format": "double"
+                        }
+                        }
+                    },
+                    "CountryResponse": {
+                        "type": "object",
+                        "properties": {
+                        "country": {
+                            "type": "string",
+                            "description": "Name of the country."
+                        }
+                        }
+                    },
+                    "SunTimesResponse": {
+                        "type": "object",
+                        "properties": {
+                        "sunrise": {
+                            "type": "string",
+                            "format": "time",
+                            "description": "Time of sunrise."
+                        },
+                        "sunset": {
+                            "type": "string",
+                            "format": "time",
+                            "description": "Time of sunset."
+                        }
+                        }
+                    },
+                    "SunTimesRequest": {
+                        "type": "object",
+                        "properties": {
+                        "coordinates": {
+                            "$ref": "#/components/schemas/Coordinates"
+                        },
+                        "date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Date for which to retrieve sun times."
+                        }
+                        }
+                    }
+                    }
+                },
+                "paths": {
+                    "/extract-geo-location": {
+                    "post": {
+                        "tags": ["geo-location"],
+                        "summary": "Extract Geo-Location from Image",
+                        "operationId": "extractGeoLocation",
+                        "parameters": [
+                        {
+                            "name": "Authorization",
+                            "in": "header",
+                            "required": true,
+                            "schema": {
+                            "type": "string"
+                            }
+                        }
+                        ],
+                        "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                "image": {
+                                    "type": "string",
+                                    "format": "binary",
+                                    "description": "Base64 encoded image."
+                                }
+                                },
+                                "required": ["image"]
+                            }
+                            }
+                        }
+                        },
+                        "responses": {
+                        "200": {
+                            "description": "Geo-Location coordinates extracted successfully.",
+                            "content": {
+                            "application/json": {
+                                "schema": {
+                                "$ref": "#/components/schemas/GeoLocationResponse"
+                                }
+                            }
+                            }
+                        }
+                        }
+                    }
+                    },
+                    "/get-country": {
+                    "post": {
+                        "tags": ["geo-location"],
+                        "summary": "Retrieve Country Name from Coordinates",
+                        "operationId": "getCountryFromCoordinates",
+                        "parameters": [
+                        {
+                            "name": "Authorization",
+                            "in": "header",
+                            "required": true,
+                            "schema": {
+                            "type": "string"
+                            }
+                        }
+                        ],
+                        "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Coordinates"
+                            }
+                            }
+                        }
+                        },
+                        "responses": {
+                        "200": {
+                            "description": "Country name retrieved successfully.",
+                            "content": {
+                            "application/json": {
+                                "schema": {
+                                "$ref": "#/components/schemas/CountryResponse"
+                                }
+                            }
+                            }
+                        }
+                        }
+                    }
+                    },
+                    "/sun-times": {
+                    "post": {
+                        "tags": ["geo-location"],
+                        "summary": "Retrieve Sun Rise and Set Times",
+                        "operationId": "getSunTimes",
+                        "parameters": [
+                        {
+                            "name": "Authorization",
+                            "in": "header",
+                            "required": true,
+                            "schema": {
+                            "type": "string"
+                            }
+                        }
+                        ],
+                        "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SunTimesRequest"
+                            }
+                            }
+                        }
+                        },
+                        "responses": {
+                        "200": {
+                            "description": "Sun rise and set times retrieved successfully.",
+                            "content": {
+                            "application/json": {
+                                "schema": {
+                                "$ref": "#/components/schemas/SunTimesResponse"
+                                }
+                            }
+                            }
+                        }
+                        }
+                    }
+                    }
+                }
+            }
+            ```
+        </li>
+        <li>
+            Start by running `heim new` to create a project from a template. 
+
+            <br/>
+
+            Use the up/down arrow keys to select the template and press enter:
+
+            ``` sh frame=terminal title="Heim Cli"
+            heim@system:~/repos$ heim new
+            ? Select template:  ›
+            c-http
+            csharp-http
+            csharp-http-async
+            go-http
+            python-http
+            rust-http
+            typescript-http
+            ...
+           ❯  openapi-specification
+            ...
+            ```
+
+            <br/>
+
+            :::tip
+            The first part can be done by running one command:
+
+            `heim new -s [Path to your specification]`
+
+            Use `heim template list` to get a list of available templates.
+            :::
+
+            <br/>
+
+            Next, we will choose the language that our OpenAPI specification will generate code for.
+
+            <br/>
+
+            For this we will choose C#:
+
+            ``` sh frame=terminal title="Heim Cli"
+            ✔ Select template:  · openapi-specification
+            ? Select language:  ›
+            Rust
+            ...
+           ❯  Csharp
+            ...
+            ```
+
+            <br/>
+
+            Next, we will enter the path to where you saved your specification.
+
+            <br/>
+
+            ``` sh frame=terminal title="Heim Cli"
+            ✔ Select template:  · openapi-specification
+            ✔ Select language:  · CSharp
+            OpenApi-specification (File-path / Uri): specification.json
+            ```
+
+            <br/>
+
+            Next, we will enter the application name.
+
+            <br/>
+
+            ``` sh frame=terminal title="Heim Cli"
+            ✔ Select template:  · openapi-specification
+            ✔ Select language:  · CSharp
+            ✔ OpenApi-specification (File-path / Uri): specification.json
+            'Project name': MyProject
+            ```
+
+            <br/>
+
+            Next, we will enter the application version, in the format of semantic versioning (major.minor.patch).
+
+            <br/>
+
+            For this we will use the default value of 1.0.0
+
+            <br />
+
+            ``` sh frame=terminal title="Heim Cli"
+            ✔ Select template:  · openapi-specification
+            ✔ Select language:  · CSharp
+            ✔ OpenApi-specification (File-path / Uri): specification.json
+            ✔ Project name: MyProject
+            Version: [1.0.0]:
+            ```
+            
+            <br/>
+
+            Next, we will enter the base path for the application
+
+            <br/>
+
+            The path has to start with `/`
+
+            <br />
+
+            ``` sh frame=terminal title="Heim Cli"
+            ✔ Select template:  · openapi-specification
+            ✔ Select language:  · CSharp
+            ✔ OpenApi-specification (File-path / Uri): specification.json
+            ✔ Project name: MyProject
+            ✔ Version:: 1.0.0
+            Base-path:  [/example/path]: /MyProjectPath
+
+            Rendered Template: ".gitignore"
+            Rendered Template: ".heim/GeoLocation.cs"
+            Rendered Template: ".heim/Json.cs"
+            Rendered Template: ".heim/Router.cs"
+            Rendered Template: ".heim/WasiEventLoop.cs"
+            Rendered Template: "GeoLocation.cs"
+            Rendered Template: "application.toml"
+            Rendered Template: "component.toml"
+            Rendered Template: "my-project.csproj"
+            Rendered Template: "my-project.sln"
+            Rendered Template: "nuget.config"
+            Rendered Template: "wit/types.wit"
+            Rendered Template: "wit/world.wit"
+            [00:00:00] ########################################      13/13      Success
+            INFO [ Heim new ] New component created: Some("/home/heim/repos/MyProject")
+            ```
+
+            <br/>
+
+            Once we've gone through all the previous steps, we'll have a project ready to go.
+
+            <br />
+        </li>
+        <li>
+            :::tip[Code]
+            The full code is available in our Github repository [**here**](https://github.com/Nor2-io/heim/tree/main/examples/CSharp)
+            :::
+
+            Now you have a created application ready for you to implement your solution in. In the `GeoLocation.cs` file you will find a few comments that
+            read `// REPLACE WITH IMPLEMENTATION`, this is where you implement your solution.
+
+            For more information about C# you can check out our basic C# template:
+            <LinkCard
+                title="Basic C# application"
+                href="./../../../guides/examples/basic-csharp-application/"
+            />
+        </li>
+        <li>
+
+        </li>
+    </ol>
+</Steps>

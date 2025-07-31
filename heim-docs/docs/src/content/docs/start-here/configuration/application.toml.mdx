@@ -1,0 +1,200 @@
+---
+title: "application.toml"
+date: 2024-11-30
+lastmod: 2024-12-18
+tags: []
+description: "Description of the application.toml files used for configuring applications"
+---
+
+A Nor<sup>2</sup> Heim application.toml file is used to define a application in Heim.
+
+The application.toml is required for deploying an application to Heim.
+
+<br/>
+
+---
+
+## contents
+
+The application.toml file defines the attributes of an application. It names the application, sets a component target, defines application triggers, sets values to environment variables used by the application and defines scaling limits.
+
+This example shows a simple application.toml file:
+
+```toml
+name = "example-application"
+component_target = 'example-application:latest'
+
+[trigger.http]
+type = 'http'
+path = '/test/api/*'
+method = 'All'
+
+[env]
+variable1 = "Value for variable1"
+
+[scaling]
+region = ['localhost']
+max-parallel = 4
+max-memory = '512MiB'
+max-cpu = 2
+timeout = '1h'
+
+[capabilities]
+allowed-outgoing-url = ["https://dummyjson.com/*", "https://www.google.com/*"]
+```
+*An example application application.toml*
+
+<br/>
+
+### name
+
+This is a string identifier for your application.
+
+A properly formatted, valid application name should only contain a combination of letters and digits, ie `a-zA-Z0-9-_`.
+
+<br/>
+
+### component_target
+
+This refers to the target component for your application deployment.
+
+Example value:
+
+`'example-application:latest'`
+
+<br/>
+
+:::caution[beta version]
+
+In the beta version of Heim, an application will be locked to only one component. Therefore, this field has no effect in the Heim beta.
+
+:::
+
+<br/>
+
+### trigger definitions
+
+The application.toml can contain triggers definitions.
+
+| name       | contents                                                                                                            | required  |
+| ---------- | ------------------------------------------------------------------------------------------------------------------- | ----------|
+| _type_     | trigger type in `string` format, example: `http`                                                                    | **yes**   |
+| _path_     | relative path in `string` format, example: `/test/api/` and the path can also include wildcards `*`                 | **yes**   |
+| _method_   | method value string – `GET`, `POST`, `PATCH`,`HEAD`, `OPTIONS`, `TRACE`, `PUT`, `DELETE`, `CONNECT` or `All`        | **yes**   |
+
+This is an example trigger definition declaration, for a trigger called "trigger.http":
+
+```toml
+[trigger.http]
+type = 'http'
+path = '/test/api/*'
+method = 'All'
+```
+
+<br/>
+
+:::caution[beta version]
+
+In the beta version of Heim, only http triggers are supported.
+
+:::
+
+<br/>
+
+### env
+
+The env section contains value assignments for environment variables.
+
+Environment variables are value assignments for any environment variables expected by a component. Environment variables are declared in that component's [configuration file](./../componenttoml/).
+
+All non-optional environment variables for a component have to have a value assigned to them in this section.
+
+This is an example of an env section with two environment variables:
+
+```toml
+[env]
+VARIABLE_NAME = "VALUE1"
+VARIABLE_NAME_TWO = "VALUE""
+```
+
+<br/>
+
+### scaling definitions
+
+These sections contain maximum allowed values an application may scale up to. The Heim tool will limit any resource usage beyond what is set here.
+
+Scaling settings may be assigned to a specific region, or have their region setting declared as `'localhost'`. There should be a main scaling setting, denoted as`[scaling]`. This section should contain a list of regions, and default scaling values used for all regions without a specific scaling setup. Additional, region-specific, scaling sections may be added, with headers in the format `[scaling.${region}]`. Any region-specific scaling section should be connected to a region in the main scaling section region list.
+
+| name               | contents                                                                                                        | required |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- | ---------|
+| _region_           | list of regions in `string` format, example: `["eu-north-1", "eu-west-1"]`                                      | **no**   |
+| _max-parallel_     | max-parallel deployments  in positive `integer` format                                                          | **no**   |
+| _max-memory_       | max allowed memory usage in string format, denoting number and unit, possible units being `KiB`, `MiB` or `GiB` | **no**   |
+| _max-cpu_          | max allowed cpu cores used, in positive `integer` format                                                        | **no**   |
+| _timeout_          | timeout for long-running processes in `string` format, denoting number and unit, example: `1h`                  | **no**   |
+
+This is an example of a main scaling section:
+
+```toml
+[scaling]
+region = ['localhost']
+max-parallel = 4
+max-memory = '1GiB'
+max-cpu = 2
+timeout = '1h'
+```
+
+This is an example of a region-specific scaling section:
+
+```toml
+[scaling.eu-west-1]
+max-parallel = 2
+max-memory = '500MiB'
+max-cpu = 1
+timeout = '2h'
+```
+
+Note that any region-specific scaling sections should refer to a region in the main scaling section.
+
+<br/>
+
+:::caution[beta version]
+
+In the beta version of Heim, scaling settings are ignored, but will be displayed in the heim portal.
+
+Use `'localhost'` for all scaling setting region fields in the beta version. Additional regions and region-specific scaling section may be added, and will be visible in the Heim portal, but will not be respected by the Heim tool.
+
+:::
+
+<br/>
+
+### capabilities definitions
+
+The capabilities section contains allowed URLs that the application can communicate with.
+
+All URLs can be declared fully or use the `*` wildcard to allow all paths for a specific domain.
+
+This is an example of a capabilities section with two allowed URLs:
+
+```toml
+
+[capabilities]
+allowed-outgoing-url = ["https://dummyjson.com/*", "https://www.google.com/*"]
+```
+
+<br/>
+
+---
+
+## Summary
+
+A application.toml file is used to declare an application that can be deployed to Heim.
+
+| section                                                     | format                                                           | required   |
+| ----------------------------------------------------------- | ---------------------------------------------------------------- | -----------|
+| _[name](#name)_                                             | identifier for your application, in `string` format              | **yes**    |
+| _[component_target](#component_target)_                     | reference to target component                                    | **yes**    |
+| _[trigger definitions](#trigger-definitions)_               | sections containing trigger definitions                          | **yes**    |
+| _[env](#env)_                                               | section containing environment variable definitions              | **no**     |
+| _[scaling definitions](#scaling-definitions)_               | sections containing scaling definitions                          | **no**     |
+| _[capabilities definitions](#capabilities-definitions)_     | sections containing capabilities definitions                     | **no**     |

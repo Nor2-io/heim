@@ -1,0 +1,220 @@
+---
+title: "Built-in templates"
+date: 2024-12-16
+lastmod: 2024-12-19
+description: "Information about the built in templates"
+sidebar:
+  order: 0
+---
+
+import { Icon } from "@astrojs/starlight/components";
+
+Heim currently supports applications written in `Rust`, `C#`, `Typescript`, `python` and `C`. When you install Heim, built-in templates are included with your installation.
+
+Read on for descriptions of the built-in templates that will be included in an installation of Heim.
+
+<br />
+
+:::caution[beta version]
+The current limitation on supported programming languages unique to the current Heim beta version.
+
+In future versions of Heim we plan on unlocking support and templates for a multitude of programming languages.
+:::
+
+<br />
+
+:::tip[Using templates]
+Check out our [_Getting Started_](./../../start-here/getting-started/#using-applications/) document, for general information about working with applications in Heim, and how to use a template to create a new application.
+:::
+
+<br />
+
+---
+
+<br />
+
+## <Icon name="seti:rust" label="Rust language icon" class="inline-icon" /> Rust
+
+### rust-http
+
+A minimal Rust component, ready to deploy an `HTTP function`
+
+<br />
+
+**inputs:**
+
+| name                  | description                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| `http_trigger_path`   | trigger path the default application component will listen on    |
+| `http_trigger_method` | the HTTP method the default application component will listen on |
+
+<br />
+
+:::tip[Guide]
+This template has its own written guide, which you can find [here](./../../guides/examples/basic-rust-application/).
+:::
+
+<br />
+
+---
+
+<br />
+
+## <Icon name="seti:c-sharp" label="C# language icon" class="inline-icon" /> C-Sharp
+
+### csharp-http
+
+A minimal C# component, ready to deploy an `HTTP function`.
+Requires **dotnet 9**!
+
+<br />
+
+**inputs:**
+
+| name                  | description                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| `http_trigger_path`   | trigger path the default application component will listen on    |
+| `http_trigger_method` | the HTTP method the default application component will listen on |
+
+<br />
+
+:::tip[Guide]
+This template has its own written guide, which you can find [here](./../../guides/examples/basic-csharp-application/).
+:::
+
+## <br/>
+
+<br />
+
+### csharp-http-async
+
+A minimal C# async component, ready to deploy an `HTTP function`, where you can include almost all external C# libraries
+Requires **dotnet 10 preview** or later!
+
+<br />
+
+**inputs:**
+
+| name                  | description                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| `http_trigger_path`   | trigger path the default application component will listen on    |
+| `http_trigger_method` | the HTTP method the default application component will listen on |
+
+<br />
+
+---
+
+<br />
+
+## <Icon name="seti:python" label="Python language icon" class="inline-icon" /> Python
+
+### python-http
+
+A minimal Python component, ready to deploy an `HTTP function`.
+
+<br />
+
+**inputs:**
+
+| name                  | description                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| `http_trigger_path`   | trigger path the default application component will listen on    |
+| `http_trigger_method` | the HTTP method the default application component will listen on |
+
+<br />
+
+:::tip[Guide]
+This template has its own written guide, which you can find [here](./../../guides/examples/basic-python-application/).
+:::
+
+<br />
+
+---
+
+<br />
+
+## <Icon name="seti:typescript" label="Python language icon" class="inline-icon" /> Typescript
+
+### typescript-http
+
+A minimal Typescript component, ready to deploy an `HTTP function`.
+
+<br />
+
+**inputs:**
+
+| name                  | description                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| `http_trigger_path`   | trigger path the default application component will listen on    |
+| `http_trigger_method` | the HTTP method the default application component will listen on |
+
+<br />
+
+:::tip[Guide]
+This template has its own written guide, which you can find [here](./../../guides/examples/basic-typescript-application/).
+:::
+
+<br />
+
+---
+
+<br />
+
+## <Icon name="seti:c" label="C language icon" class="inline-icon" /> C
+
+### c-http
+
+A minimal C application, ready to deploy an `HTTP function`
+
+<br />
+
+**inputs:**
+
+| name                  | description                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| `http_trigger_path`   | trigger path the default application component will listen on    |
+| `http_trigger_method` | the HTTP method the default application component will listen on |
+
+<br />
+
+:::tip[Guide]
+This template has its own written guide, which you can find [here](./../../guides/examples/basic-c-application/).
+:::
+
+## <Icon name="seti:go" label="Go language icon" class="inline-icon" /> Go
+
+### Go-http
+
+A minimal Go application, ready to deploy an `HTTP function`
+
+<br />
+
+**inputs:**
+
+| name                  | description                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| `http_trigger_path`   | trigger path the default application component will listen on    |
+| `http_trigger_method` | the HTTP method the default application component will listen on |
+
+<br />
+
+:::tip[Guide]
+This template has its own written guide, which you can find [here](./../../guides/examples/basic-go-application/).
+:::
+
+## OpenAPI 
+
+Generates a Csharp or rust-http project based on a OpenAPI-specification.
+See limitations of our current version of the [OpenAPI-template](./../openapi/).
+<br />
+
+**inputs:**
+
+| name                     | description                                                               |
+| ------------------------ | ------------------------------------------------------------------------- |
+| `OpenAPI-specification`  | path or url to the openapi-specification (Yaml/Json)                      |
+| `Project name`           | name of the generated project                                             |
+| `Version`                | version-number for the project (defaults to specification version-number) |
+| `Base-path`              | base-path for the all paths specified in the specification                |
+
+<br />

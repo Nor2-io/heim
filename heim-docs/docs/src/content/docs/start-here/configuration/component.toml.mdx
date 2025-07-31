@@ -1,0 +1,252 @@
+---
+title: "component.toml"
+date: 2024-11-30
+lastmod: 2024-12-19
+tags: []
+description: "Description of the component.toml files used for configuring components"
+---
+
+A Nor<sup>2</sup> Heim component.toml file is used to define a *component*. This component will be used to create an *application* in the Heim tool.
+
+The component.toml file is required for building a component.
+
+<br/>
+
+---
+## contents
+
+The component.toml file contains metadata, configuration necessary to build the application in different modes, environmental variables used by the application and more.
+{/* any commands that may be used to control the application, */}
+
+This example shows a simple component.toml file:
+
+```toml
+name = "example-application"
+version = "0.1.0"
+
+[registry_metadata]
+authors = ["A developer"]
+description = "Description of example-application"
+license = "MIT OR Apache-2.0 WITH LLVM-exception"
+categories = ["useful", "application"]
+[[registry_metadata.custom_licenses]]
+id = "Id1"
+name = "License name1"
+text = "License text1"
+reference = "License reference 1"
+[[registry_metadata.LINKS]]
+linktype = "Documentation"
+linkvalue = "https://docs.heim.dev"
+[[registry_metadata.LINKS]]
+linktype = "Homepage"
+linkvalue = "https://heim.dev"
+[[registry_metadata.LINKS]]
+linktype = "Repository"
+linkvalue = "https://github.com"
+[[registry_metadata.LINKS]]
+linktype = "Funding"
+linkvalue = "https://funding.io"
+[[registry_metadata.LINKS]]
+linktype = "Test"
+linkvalue = "https://test.test"
+
+[build.dev]
+build = "cargo build --target=wasm32-wasip2"
+wasm_path = "target/wasm32-wasip2/debug/example_application.wasm"
+
+[build.prod]
+build = "cargo build --target=wasm32-wasip2 --release"
+wasm_path = "target/wasm32-wasip2/release/example_application.wasm"
+[build.prod.envs]
+CFLAGS="--sysroot=%%WASI_SDK_PATH%%/share/wasi-sysroot"
+
+[input.env]
+HOST_ADRESS = { type = "String", optional = true, default = "" }
+SHOW_HOST_ADRESS = { type = "Bool" }
+
+```
+*An example component.toml*
+{/* [commands]
+run = "wasmtime serve target/wasm32-wasip2/debug/example_application.wasm --addr=127.0.0.1:8080"
+run_production = "wasmtime serve target/wasm32-wasip2/release/example_application.wasm --addr=127.0.0.1:8080" */}
+
+<br />
+
+### name
+
+This is an string identifier for your component.
+
+This identifier is used when multiple components are composed to a single application. A properly formatted, valid component name should only contain a combination of letters and digits and hyphens, ie `a-zA-Z0-9-_`.
+
+Example of a valid component name field:
+
+```toml
+name = "Example-Application1"
+```
+
+<br/>
+
+### version
+
+Version for the component as a string identifier.
+
+This identifier is used when building the component which builds it to the registry. This version is then referenced in application.toml for deploying.
+
+Example of a valid component version field:
+
+```toml
+version = "0.1.0"
+```
+
+<br/>
+
+### registry_metadata
+
+The registry metadata section contains component metadata. Metadata is required for when a component is pushed to a component registry.
+
+This table contains a list of possible metadata values:
+
+| name               | contents                                                                                                                                             | required               |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -----------------------|
+| _authors_          | list of names in `string` format, example: `["Timmy Silesmo", "Lukas Sandholm Duberg"]`                                                              | **no**                 |
+| _description_      | markdown text, describing the component                                                                                                              | **no**                 |
+| _license_          | SPDX, license or licenses for the component                                                                                                          | **no**                 |
+| _custom_licenses_  | Custom declared licenses for the component                                                                                                           | **no**                 |
+| _categories_       | list of categories, example: `["Tools", "HTTP", "GraphQL"]`                                                                                          | **no**                 |
+| _links_            | list of Links with a link-type and link-value, Example: `[(Documentation, https://nor2.io/docs), (Homepage, https://nor2.io)]`                       | **no**                 |
+
+Example of a simple registry metadata section:
+
+```toml
+[registry_metadata]
+authors = ["A developer"]
+description = "Description of Example-Application1"
+license = "MIT OR Apache-2.0 WITH LLVM-exception"
+[[registry_metadata.custom_licenses]]
+id = "0001"
+name = "License for anyone"
+text = "Anyone may use this."
+reference = "License reference 1"
+categories = ["API", "graphQL"]
+[[registry_metadata.LINKS]]
+linktype = "Documentation"
+linkvalue = "https://docs.heim.dev"
+[[registry_metadata.LINKS]]
+linktype = "Homepage"
+linkvalue = "https://heim.dev"
+```
+
+<br />
+
+{/* ### commands
+
+This section contains a list of custom commands that can be used for manipulating a component. Commands like these are typically used for debugging, automatically generating documentation, and whatever other custom functionality a developer might want to make externally accessible.
+
+These commands can be triggered from Heim with the string `heim exec {COMMAND NAME}`, for example:
+
+```bash
+> heim exec custom_debug_command
+```
+
+Example of a command section with two custom commands:
+
+```toml
+[commands]
+run = "wasmtime serve target/wasm32-wasip2/debug/example_application.wasm --addr=127.0.0.1:8080"
+run_production = "wasmtime serve target/wasm32-wasip2/release/example_application.wasm --addr=127.0.0.1:8080"
+```
+
+<br/> */}
+
+### build definitions
+
+These sections define build configurations, and there may be more than one. Note that some of these values are required, as per the table below.
+
+
+| name               | contents                                                                                                             | required |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------- | ---------|
+| _dev.build_        | Build command in component language, for building and producing a wasm output for the dev configuration.             | **no**   |
+| _dev.wasm_path_    | Relative path from your component, referencing the wasm-output from your dev.build-command.                          | **no**   |
+| _dev.envs_         | Environment variable definitions, these values might be needed for building specific components in development mode. | **no**   |
+| _prod.build_       | Build command in component language, for building and producing a wasm output for the release configuration.         | **Yes**  |
+| _prod.wasm_path_   | Relative path from your component, referencing the wasm-output from your prod.build-command.                         | **Yes**  |
+| _prod.envs_        | Environment variable definitions, these values might be needed for building specific components in production mode.  | **no**   |
+
+Example of a build definition section, for building in dev mode:
+
+```toml
+[build.dev]
+build = "cargo build --target=wasm32-wasip2"
+wasm_path = "target/wasm32-wasip2/debug/example_application.wasm"
+[build.dev.envs]
+ENV_FLAG_1 = "debug"
+ENV_FLAG_2 = "%%SYSTEM_ENV_FLAG%%"
+
+[build.prod]
+build = "cargo build --target=wasm32-wasip2"
+wasm_path = "target/wasm32-wasip2/release/example_application.wasm"
+[build.prod.envs]
+ENV_FLAG_1 = "release"
+ENV_FLAG_2 = "%%SYSTEM_ENV_FLAG%%"
+```
+
+Commands can also be chained using the `&&` operator like so `command_1 && command_2`
+Example of a prod build that echoes "hello world" and then builds a component:
+
+```toml
+[build.prod]
+build = "echo 'hello world' && cargo build --target=wasm32-wasip2"
+wasm_path = "target/wasm32-wasip2/release/example_application.wasm"
+```
+
+Environment variables can also be used in build commands with the following pattern: `%%ENV_VAR%%`.
+Example of a prod build that uses an environment variable in the build command:
+
+```toml
+[build.prod]
+build = "cargo build --target=%%TARGET_TRIPLE_ENV%%"
+wasm_path = "target/wasm32-wasip2/release/example_application.wasm"
+```
+
+<br/>
+
+### environment definitions
+
+Definitions for environment variables used by your component.
+
+Multiple environment variables can be defined for each component. These environment variables are only required to be populated once an application is created from the component.
+
+Environment variables are declared by adding **input.env** with a variable name, and a definition declared in the table below.
+
+| section         | format                                                                                                           | required  |
+| ----------------| ---------------------------------------------------------------------------------------------------------------- | ----------|
+| _type_          | variable data type, *String*,*Bool*,*Char*,*S8*,*S16*,*S32*,*S64*,*U8*,*U16*,*U32*,*U64*,*F32*,*F64*             | **yes**   |
+| _optional_      | `boolean` value defining whether the variable is optional, true/false                                            | **no**    |
+| _default_       | variable default value, should be the same type as defined in _type_                                             | **no**    |
+
+This is an example environment variable section, with two environment variables:
+
+```toml
+[input.env]
+VARIABLE1 = { type = 'String' , optional = false, default = "Test value" }
+VARIABLE2 = { type = 'Bool' , optional = true, default = false }
+```
+
+<br/>
+
+---
+
+## Summary
+
+A **component.toml** file is used for defining the externally available information and attributes of the component.
+
+The following table describes the possible contents of a component.toml:
+
+| section                                                 | format                                                                                | required    |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------|
+| _[name](#name)_                                         | identifier for your component, in `string` format                                     | **yes**     |
+| _[version](#version)_                                   | component version, in `string` format                                                 | **yes**     |
+| _[registry_metadata](#registry_metadata)_               | section containing wasm component _metadata_                                          | **no**      |
+| _[build definitions](#build-definitions)_               | section containing build command definitions for build modes, with output paths       | **yes**     |
+| _[environment definitions](#environment-definitions)_   | section containing list of possible environment variables expected by the component   | **no**      |
+{/* | _[commands](#commands)_                                 | section defining custom command to help with miscellaneous tasks                      | **no**      | */}

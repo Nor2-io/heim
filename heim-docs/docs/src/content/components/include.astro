@@ -1,0 +1,19 @@
+---
+interface Props {
+  file: string;
+}
+
+const { file } = Astro.props;
+const includes = import.meta.glob("../../includes/**/*.md");
+const loader = includes[`../../includes/${file}`];
+
+if (!loader) {
+  throw new Error(`Could not find \`${file}\`.`);
+}
+
+const loaded = await loader();
+
+const { Content } = loaded as { Content: any };
+---
+
+<Content />

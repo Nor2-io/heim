@@ -1,0 +1,339 @@
+---
+title: "OpenAPI template"
+date: 2025-07-02
+lastmod: 2025-07-02
+description: "Information about our OpenAPI template"
+sidebar:
+  order: 1
+---
+
+Heim currently supports generating a http-api-application based on a OpenAPI v3.0.3 specification for `Rust` and `C#`.
+
+We currently support only a small subset of the specification.
+<br />
+
+:::caution[beta version]
+The current limitation on the small subset of the specification will be adjusted in a later version.
+
+Together with support for OpenAPI v3.1 specification.
+:::
+
+<br />
+
+:::tip[Using templates]
+Check out our [_Getting Started_](./../../start-here/getting-started/#using-applications/) document, for general information about working with applications in Heim, and how to use a template to create a new application.
+:::
+
+:::tip[Guide]
+This template has its own written guide, which you can find [here](./../../guides/examples/open-api-example/).
+:::
+
+<br />
+
+## OpenAPI compatibilty in Heim
+**Supported does not mean functionality.**  
+A property can be allowed to be used in a specification by Heim but the property might be ignored. Supported means its allowed in a specification.  
+
+---
+### OpenAPI Root Object
+| Field name   | Type                                                            | Openapi required | Heim required | Supported | Note                                                             |
+| ------------ | --------------------------------------------------------------- | ---------------- | ------------- | --------- | ---------------------------------------------------------------- |
+| openapi      | ``string``                                                      | ✅                | ✅             | ✅         |                                                                  |
+| info         | [Info Object](#info-object)                                     | ✅                | ✅             | ✅         |                                                                  |
+| servers      | [[Server Object](#server-object)]                               | ❌                | ❌             | ✅         |                                                                  |
+| paths        | [Paths Object](#paths-object)                                   | ❌                | ✅             | ✅         | Not required by OpenAPI but specification is useless without it. |
+| components   | [Components Object](#components-object)                         | ❌                | ❌             | ✅         |                                                                  |
+| security     | [[Security Requirement Object](#security-requirement-object)]   | ❌                | ❌             | ✅         |                                                                  |
+| tags         | [[Tag Object](#tag-object)]                                     | ❌                | ❌             | ✅         |                                                                  |
+| externalDocs | [External Documentation Object](#external-documentation-object) | ❌                | ❌             | ✅         |                                                                  |
+
+### Info Object
+| Field name     | Type                              | Openapi required | Heim required | Supported | Note |
+| -------------- | --------------------------------- | ---------------- | ------------- | --------- | ---- |
+| title          | ``string``                        | ✅                | ✅             | ✅         |      |
+| description    | ``string``                        | ❌                | ❌             | ✅         |      |
+| termsOfService | ``string``                        | ❌                | ❌             | ✅         |      |
+| contact        | [Contact Object](#contact-object) | ❌                | ❌             | ✅         |      |
+| license        | [License Object](#license-object) | ❌                | ❌             | ✅         |      |
+| version        | ``string``                        | ✅                | ✅             | ✅         |      |
+
+### Contact Object
+| Field name | Type       | Openapi required | Heim required | Supported | Note |
+| ---------- | ---------- | ---------------- | ------------- | --------- | ---- |
+| name       | ``string`` | ❌                | ❌             | ✅         |      |
+| url        | ``string`` | ❌                | ❌             | ✅         |      |
+| email      | ``string`` | ❌                | ❌             | ✅         |      |
+
+### License Object
+| Field name | Type       | Openapi required | Heim required | Supported | Note |
+| ---------- | ---------- | ---------------- | ------------- | --------- | ---- |
+| name       | ``string`` | ✅                | ✅             | ✅         |      |
+| url        | ``string`` | ❌                | ❌             | ✅         |      |
+
+### Server Object
+| Field name  | Type                                                               | Openapi required | Heim required | Supported | Note |
+| ----------- | ------------------------------------------------------------------ | ---------------- | ------------- | --------- | ---- |
+| url         | ``string``                                                         | ✅                | ✅             | ✅         |      |
+| description | ``string``                                                         | ❌                | ❌             | ✅         |      |
+| variables   | Map[``string``, [Server Variable Object](#server-variable-object)] | ❌                | ❌             | ✅         |      |
+
+### Server Variable Object
+| Field name  | Type         | Openapi required | Heim required | Supported | Note |
+| ----------- | ------------ | ---------------- | ------------- | --------- | ---- |
+| enum        | [``string``] | ❌                | ❌             | ✅         |      |
+| default     | ``string``   | ✅                | ✅             | ✅         |      |
+| description | ``string``   | ❌                | ❌             | ✅         |      |
+
+### Components Object
+| Field name      | Type                                                                                                        | Openapi required | Heim required | Supported | Note |
+| --------------- | ----------------------------------------------------------------------------------------------------------- | ---------------- | ------------- | --------- | ---- |
+| schemas         | Map[``string``, [Schema Object](#schema-object) \| [Reference Object](#reference-object)]                   | ❌                | ❌             | ✅         |                           |
+| responses       | Map[``string``, [Response Object](#response-object) \| [Reference Object](#reference-object)]               | ❌                | ❌             | ❌         |                           |
+| parameters      | Map[``string``, [Parameter Object](#parameter-object) \| [Reference Object](#reference-object)]             | ❌                | ❌             | ❌         |                           |
+| examples        | Map[``string``, [Example Object](#example-object) \| [Reference Object](#reference-object)]                 | ❌                | ❌             | ✅         |                           |
+| requestBodies   | Map[``string``, [Request Body Object](#request-body-object) \| [Reference Object](#reference-object)]       | ❌                | ❌             | ❌         |                           |
+| headers         | Map[``string``, [Header Object](#header-object) \| [Reference Object](#reference-object)]                   | ❌                | ❌             | ❌         |                           |
+| securitySchemes | Map[``string``, [Security Scheme Object](#security-scheme-object) \| [Reference Object](#reference-object)] | ❌                | ❌             | ✅         | Currently not implemented |
+| links           | Map[``string``, [Link Object](#link-object) \| [Reference Object](#reference-object)]                       | ❌                | ❌             | ✅         |                           |
+| callbacks       | Map[``string``, [Callback Object](#callback-object) \| [Reference Object](#reference-object)]               | ❌                | ❌             | ❌         |                           |
+
+### Paths Object
+| Field name | Type                                  | Openapi required | Heim required | Supported | Note                                                          |
+| ---------- | ------------------------------------- | ---------------- | ------------- | --------- | ------------------------------------------------------------- |
+| /\{path\}  | [Path Item Object](#path-item-object) | ❌                | ✅             | ✅         | A specification used in Heim without a path serves no purpose |
+
+### Path Item Object
+| Field name  | Type                                                                             | Openapi required | Heim required | Supported | Note |
+| ----------- | -------------------------------------------------------------------------------- | ---------------- | ------------- | --------- | ---- |
+| $ref        | ``string``                                                                       | ❌                | ❌             | ❌         |      |
+| summary     | ``string``                                                                       | ❌                | ❌             | ✅         |      |
+| description | ``string``                                                                       | ❌                | ❌             | ✅         |      |
+| get         | [Operation Object](#operation-object)                                            | ❌                | ❌             | ✅         |      |
+| put         | [Operation Object](#operation-object)                                            | ❌                | ❌             | ✅         |      |
+| post        | [Operation Object](#operation-object)                                            | ❌                | ❌             | ✅         |      |
+| delete      | [Operation Object](#operation-object)                                            | ❌                | ❌             | ✅         |      |
+| options     | [Operation Object](#operation-object)                                            | ❌                | ❌             | ✅         |      |
+| head        | [Operation Object](#operation-object)                                            | ❌                | ❌             | ✅         |      |
+| patch       | [Operation Object](#operation-object)                                            | ❌                | ❌             | ✅         |      |
+| trace       | [Operation Object](#operation-object)                                            | ❌                | ❌             | ✅         |      |
+| servers     | [[Server Object](#server-object)]                                                | ❌                | ❌             | ✅         |      |
+| parameters  | [[Parameter Object](#parameter-object) \| [Reference Object](#reference-object)] | ❌                | ❌             | ✅         |      |
+
+### Operation Object
+| Field name   | Type                                                                                        | Openapi required | Heim required | Supported | Note                                          |
+| ------------ | ------------------------------------------------------------------------------------------- | ---------------- | ------------- | --------- | --------------------------------------------- |
+| tags         | [`string`]                                                                                  | ❌                | ❌             | ✅         |                                               |
+| summary      | `string`                                                                                    | ❌                | ❌             | ✅         |                                               |
+| description  | `string`                                                                                    | ❌                | ❌             | ✅         |                                               |
+| externalDocs | [External Documentation Object](#external-documentation-object)                             | ❌                | ❌             | ✅         |                                               |
+| operationId  | `string`                                                                                    | ❌                | ✅             | ✅         | This property is used to identify your routes |
+| parameters   | [[Parameter Object](#parameter-object) \| [Reference Object](#reference-object)]            | ❌                | ❌             | ✅         |                                               |
+| requestBody  | [Request Body Object](#request-body-object) \| [Reference Object](#reference-object)        | ❌                | ❌             | ✅\|❌      | Not supported as `$ref`                       |
+| responses    | [Responses Object](#responses-object)                                                       | ✅                | ✅             | ✅         |                                               |
+| callbacks    | Map[`string`, [Callback Object](#callback-object) \| [Reference Object](#reference-object)] | ❌                | ❌             | ✅         |                                               |
+| deprecated   | `boolean`                                                                                   | ❌                | ❌             | ✅         |                                               |
+| security     | [[Security Requirement Object](#security-requirement-object)]                               | ❌                | ❌             | ✅         |                                               |
+| servers      | [[Server Object](#server-object)]                                                           | ❌                | ❌             | ✅         |                                               |
+
+### External Documentation Object
+| Field name  | Type     | Openapi required | Heim required | Supported | Note |
+| ----------- | -------- | ---------------- | ------------- | --------- | ---- |
+| description | `string` | ❌                | ❌             | ✅         |      |
+| url         | `string` | ✅                | ✅             | ✅         |      |
+
+### Parameter Object
+| Field name      | Type                                                                                      | Openapi required | Heim required | Supported | Note                                        |
+| --------------- | ----------------------------------------------------------------------------------------- | ---------------- | ------------- | --------- | ------------------------------------------- |
+| name            | `string`                                                                                  | ✅                | ✅             | ✅         |                                             |
+| in              | `string`                                                                                  | ✅                | ✅             | ✅\|❌      | `path` is not supported as value            |
+| description     | `string`                                                                                  | ❌                | ❌             | ✅         |                                             |
+| required        | `boolean`                                                                                 | ✅\|❌             | ✅             | ✅         |                                             |
+| deprecated      | `boolean`                                                                                 | ❌                | ❌             | ✅         |                                             |
+| allowEmptyValue | `boolean`                                                                                 | ❌                | ❌             | ✅         |                                             |
+| style           | `string`                                                                                  | ❌                | ❌             | ✅         |                                             |
+| explode         | `boolean`                                                                                 | ❌                | ❌             | ✅         |                                             |
+| allowReserved   | `boolean`                                                                                 | ❌                | ❌             | ✅         |                                             |
+| schema          | [Schema Object](#schema-object) \| [Reference Object](#reference-object)                  | ✅\|❌             | ✅             | ✅\|❌      | Does not support types `object` and `array` |
+| example         | `Any`                                                                                     | ❌                | ❌             | ✅         |                                             |
+| examples        | Map[`string`, [Example Object](#example-object) \| [Reference Object](#reference-object)] | ❌                | ❌             | ✅         |                                             |
+| content         | Map[`string`, [Media Type Object](#media-type-object)]                                    | ✅\|❌             | ❌             | ❌         |                                             |
+
+### Request Body Object
+| Field       | Type                                                     | Openapi required | Heim required | Supported | Note                                    |
+| ----------- | -------------------------------------------------------- | ---------------- | ------------- | --------- | --------------------------------------- |
+| description | ``string``                                               | ❌                | ❌             | ✅         |                                         |
+| content     | Map[``string``, [Media Type Object](#media-type-object)] | ✅                | ❌             | ✅         | Must be present but allowed to be empty |
+| required    | ``boolean``                                              | ❌                | ❌             | ✅         |                                         |
+
+### Media Type Object
+| Field    | Type                                                                                        | Openapi required | Heim required | Supported | Note |
+| -------- | ------------------------------------------------------------------------------------------- | ---------------- | ------------- | --------- | ---- |
+| schema   | [Schema Object](#schema-object) \| [Reference Object](#reference-object)                    | ❌                | ❌             | ✅         |      |
+| example  | `Any`                                                                                       | ❌                | ❌             | ✅         |      |
+| examples | Map[``string``, [Example Object](#example-object) \| [Reference Object](#reference-object)] | ❌                | ❌             | ✅         |      |
+| encoding | Map[``string``, [Encoding Object](#encoding-object)]                                        | ❌                | ❌             | ✅         |      |
+
+### Encoding Object
+| Field         | Type                                                                                      | Openapi required | Heim required | Supported | Note |
+| ------------- | ----------------------------------------------------------------------------------------- | ---------------- | ------------- | --------- | ---- |
+| contentType   | `string`                                                                                  | ❌                | ❌             | ✅         |      |
+| headers       | Map[``string``, [Header Object](#header-object) \| [Reference Object](#reference-object)] | ❌                | ❌             | ✅         |      |
+| style         | `string`                                                                                  | ❌                | ❌             | ✅         |      |
+| explode       | `boolean`                                                                                 | ❌                | ❌             | ✅         |      |
+| allowReserved | `boolean`                                                                                 | ❌                | ❌             | ✅         |      |
+
+### Responses Object
+| Field name       | Type                                                                         | Openapi required | Heim required | Supported | Note |
+| ---------------- | ---------------------------------------------------------------------------- | ---------------- | ------------- | --------- | ---- |
+| default          | [Response Object](#response-object) \| [Reference Object](#reference-object) | ❌                | ❌             | ✅         |      |
+| HTTP Status Code | [Response Object](#response-object) \| [Reference Object](#reference-object) | ❌                | ❌             | ✅\|❌      |      |
+
+### Response Object
+| Field name  | Type                                                                                    | Openapi required | Heim required | Supported | Note |
+| ----------- | --------------------------------------------------------------------------------------- | ---------------- | ------------- | --------- | ---- |
+| description | `string`                                                                                | ✅                | ✅             | ✅         |      |
+| headers     | Map[`string`, [Header Object](#header-object) \| [Reference Object](#reference-object)] | ❌                | ❌             | ✅         |      |
+| content     | Map[`string`, [Media Type Object](#media-type-object)]                                  | ❌                | ❌             | ✅         |      |
+| links       | Map[`string`, [Link Object](#link-object) \| [Reference Object](#reference-object)]     | ❌                | ❌             | ✅         |      |
+
+### Callback Object
+| Field name     | Type                                  | Openapi required | Heim required | Supported | Note                                                |
+| -------------- | ------------------------------------- | ---------------- | ------------- | --------- | --------------------------------------------------- |
+| \{expression\} | [Path Item Object](#path-item-object) | ❌                | ❌             | ✅\|❌      | Dynamic keys evaluated at runtime are not supported |
+
+### Example Object
+| Field name    | Type     | Openapi required | Heim required | Supported | Note |
+| ------------- | -------- | ---------------- | ------------- | --------- | ---- |
+| summary       | `string` | ❌                | ❌             | ✅         |      |
+| description   | `string` | ❌                | ❌             | ✅         |      |
+| value         | `Any`    | ❌                | ❌             | ✅         |      |
+| externalValue | `string` | ❌                | ❌             | ✅         |      |
+
+### Link Object
+| Field        | Type                                    | Required | Heim required | Supported | Note |
+| ------------ | --------------------------------------- | -------- | ------------- | --------- | ---- |
+| operationRef | `string`                                | ❌        | ❌             | ✅         |      |
+| operationId  | `string`                                | ❌        | ❌             | ✅         |      |
+| parameters   | Map[`string`, `Any` \| \{expressions\}] | ❌        | ❌             | ✅         |      |
+| requestBody  | `Any` \| \{expressions\}                | ❌        | ❌             | ✅         |      |
+| description  | `string`                                | ❌        | ❌             | ✅         |      |
+| server       | [Server Object](#server-object)         | ❌        | ❌             | ✅         |      |
+
+### Header Object
+| Field name      | Type                                                                                      | Openapi required | Heim required | Supported | Note |
+| --------------- | ----------------------------------------------------------------------------------------- | ---------------- | ------------- | --------- | ---- |
+| description     | `string`                                                                                  | ❌                | ❌             | ✅         |      |
+| required        | `boolean`                                                                                 | ❌                | ❌             | ✅         |      |
+| deprecated      | `boolean`                                                                                 | ❌                | ❌             | ✅         |      |
+| allowEmptyValue | `boolean`                                                                                 | ❌                | ❌             | ✅         |      |
+| style           | `string`                                                                                  | ❌                | ❌             | ✅         |      |
+| explode         | `boolean`                                                                                 | ❌                | ❌             | ✅         |      |
+| allowReserved   | `boolean`                                                                                 | ❌                | ❌             | ✅         |      |
+| schema          | [Schema Object](#schema-object) \| [Reference Object](#reference-object)                  | ✅                | ✅             | ✅         |      |
+| example         | `Any`                                                                                     | ❌                | ❌             | ✅         |      |
+| examples        | Map[`string`, [Example Object](#example-object) \| [Reference Object](#reference-object)] | ❌                | ❌             | ✅         |      |
+| content         | Map[`string`, [Media Type Object](#media-type-object)]                                    | ❌                | ❌             | ✅\|❌      |      |
+
+### Tag Object
+| Field        | Type                                                            | Openapi required | Heim required | Supported | Note |
+| ------------ | --------------------------------------------------------------- | ---------------- | ------------- | --------- | ---- |
+| name         | `string`                                                        | ✅                | ✅             | ✅         |      |
+| description  | `string`                                                        | ❌                | ❌             | ✅         |      |
+| externalDocs | [External Documentation Object](#external-documentation-object) | ❌                | ❌             | ✅         |      |
+
+### Reference Object
+| Field | Type     | Openapi required | Heim required | Supported | Note |
+| ----- | -------- | ---------------- | ------------- | --------- | ---- |
+| $ref  | `string` | ❌                | ❌             | ✅\|❌      |      |
+
+### Schema Object
+| Field name    | Type                                                           | Openapi required | Heim required | Supported | Note |
+| ------------- | -------------------------------------------------------------- | ---------------- | ------------- | --------- | ---- |
+| nullable      | `boolean`                                                      | ❌                | ❌             | ✅         |      |
+| discriminator | [Discriminator Object](#discriminator-object)                  | ❌                | ❌             | ✅         |      |
+| readOnly      | `boolean`                                                      | ❌                | ❌             | ✅         |      |
+| writeOnly     | `boolean`                                                      | ❌                | ❌             | ✅         |      |
+| xml           | [XML Object](#xml-object)                                      | ❌                | ❌             | ✅         |      |
+| externalDocs  | [External Documenation Object](#external-documentation-object) | ❌                | ❌             | ✅         |      |
+| example       | `Any`                                                          | ❌                | ❌             | ✅         |      |
+| deprecated    | `boolean`                                                      | ❌                | ❌             | ✅         |      |
+* also includes the propertied found in [JSON Schema Object](#json-schema-object)
+
+### Discriminator Object
+| Field        | Type                    | Openapi required | Heim required | Supported | Note |
+| ------------ | ----------------------- | ---------------- | ------------- | --------- | ---- |
+| propertyName | `string`                | ✅                | ✅             | ✅         |      |
+| mapping      | Map[`string`, `string`] | ❌                | ❌             | ✅         |      |
+
+### XML Object
+| Field     | Type      | Openapi required | Heim required | Supported | Note |
+| --------- | --------- | ---------------- | ------------- | --------- | ---- |
+| name      | `string`  | ❌                | ❌             | ✅         |      |
+| namespace | `string`  | ❌                | ❌             | ✅         |      |
+| prefix    | `string`  | ❌                | ❌             | ✅         |      |
+| attribute | `boolean` | ❌                | ❌             | ✅         |      |
+| wrapped   | `boolean` | ❌                | ❌             | ✅         |      |
+
+### Security Scheme Object
+| Field            | Type                                      | Openapi required | Heim required | Supported | Note |
+| ---------------- | ----------------------------------------- | ---------------- | ------------- | --------- | ---- |
+| type             | `string`                                  | ✅                | ✅             | ✅         |      |
+| description      | `string`                                  | ❌                | ❌             | ✅         |      |
+| name             | `string`                                  | ✅\|❌             | ✅\|❌          | ✅         |      |
+| in               | `string`                                  | ✅\|❌             | ✅\|❌          | ✅         |      |
+| scheme           | `string`                                  | ✅\|❌             | ✅\|❌          | ✅         |      |
+| bearerFormat     | `string`                                  | ❌                | ✅             | ✅         |      |
+| flows            | [OAuth Flows Object](#oauth-flows-object) | ✅\|❌             | ✅\|❌          | ✅         |      |
+| openIdConnectUrl | `string`                                  | ✅\|❌             | ✅\|❌          | ✅         |      |
+
+### OAuth Flows Object
+| Field             | Type                                    | Openapi required | Heim required | Supported | Note |
+| ----------------- | --------------------------------------- | ---------------- | ------------- | --------- | ---- |
+| implicit          | [OAuth Flow Object](#oauth-flow-object) | ❌                | ❌             | ✅         |      |
+| password          | [OAuth Flow Object](#oauth-flow-object) | ❌                | ❌             | ✅         |      |
+| clientCredentials | [OAuth Flow Object](#oauth-flow-object) | ❌                | ❌             | ✅         |      |
+| authorizationCode | [OAuth Flow Object](#oauth-flow-object) | ❌                | ❌             | ✅         |      |
+
+### OAuth Flow Object
+| Field            | Type                    | Openapi required | Heim required | Supported | Note |
+| ---------------- | ----------------------- | ---------------- | ------------- | --------- | ---- |
+| authorizationUrl | `string`                | ✅                | ✅             | ✅         |      |
+| tokenUrl         | `string`                | ✅                | ✅             | ✅         |      |
+| refreshUrl       | `string`                | ❌                | ❌             | ✅         |      |
+| scopes           | Map[`string`, `string`] | ✅                | ✅             | ✅         |      |
+
+### Security Requirement Object
+| Field    | Type       | Openapi required | Heim required | Supported | Note |
+| -------- | ---------- | ---------------- | ------------- | --------- | ---- |
+| \{name\} | [`string`] | ❌                | ❌             | ✅         |      |
+
+### JSON Schema Object
+| Field name           | Type                                       | Openapi required | Heim required | supported | note                                   |
+| -------------------- | ------------------------------------------ | ---------------- | ------------- | --------- | -------------------------------------- |
+| title                | `string`                                     | ❌                | ❌             | ✅         |                                        |
+| multipleOf           | `number`                                     | ❌                | ❌             | ✅         |                                        |
+| maximum              | `number`                                     | ❌                | ❌             | ✅         |                                        |
+| exclusiveMaximum     | `boolean`                                    | ❌                | ❌             | ✅         |                                        |
+| minimum              | `number`                                     | ❌                | ❌             | ✅         |                                        |
+| exclusiveMinimum     | `boolean`                                    | ❌                | ❌             | ✅         |                                        |
+| maxLength            | `integer`                                    | ❌                | ❌             | ✅         |                                        |
+| minLength            | `integer`                                    | ❌                | ❌             | ✅         |                                        |
+| pattern              | `string`                                     | ❌                | ❌             | ✅         |                                        |
+| maxItems             | `integer`                                    | ❌                | ❌             | ✅         |                                        |
+| minItems             | `integer`                                    | ❌                | ❌             | ✅         |                                        |
+| uniqueItems          | `boolean`                                    | ❌                | ❌             | ✅         |                                        |
+| maxProperties        | `integer`                                    | ❌                | ❌             | ✅         |                                        |
+| minProperties        | `integer`                                    | ❌                | ❌             | ✅         |                                        |
+| required             | [`string`]                                   | ❌                | ❌             | ✅         |                                        |
+| enum                 | []                                         | ❌                | ❌             | ✅         |                                        |
+| type                 | `string`                                     | ❌                | ❌             | ✅         |                                        |
+| allOf                | [[Schema Object](#schema-object)]          | ❌                | ❌             | ❌         |                                        |
+| oneOf                | [[Schema Object](#schema-object)]          | ❌                | ❌             | ❌         |                                        |
+| anyOf                | [[Schema Object](#schema-object)]          | ❌                | ❌             | ❌         |                                        |
+| not                  | [Schema Object](#schema-object)            | ❌                | ❌             | ❌         |                                        |
+| items                | `Any`                                        | ❌                | ❌             | ✅         |                                        |
+| properties           | [Schema Object](#schema-object)            | ❌                | ❌             | ✅         |                                        |
+| additionalProperties | `boolean` \| [Schema Object](#schema-object) | ❌                | ❌             | ✅\|❌    |  |
+| description          | `string`                                     | ❌                | ❌             | ✅         |                                        |
+| format               | `Any`                                        | ❌                | ❌             | ✅         |                                        |
+| default              | `Any`                                        | ❌                | ❌             | ✅         |                                        |

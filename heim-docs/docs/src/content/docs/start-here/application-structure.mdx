@@ -1,0 +1,236 @@
+---
+title: "Application Structure"
+date: 2024-12-06
+lastmod: 2024-12-19
+tags: []
+description: A brief overview of the Heim application structure
+sidebar:
+  order: 3
+---
+
+import { FileTree } from "@astrojs/starlight/components";
+
+Any application folder deployed in Heim should contain certain configuration files, and follow a specific structure. This document contains a brief description of what an application should contain in order to be successfully deployed.
+
+<br />
+
+<br />
+
+<br />
+
+## Application
+
+The _application_ layer is the top layer of the deployable units used in Heim.
+
+An application can be seen as a wrapper, or container, that holds one or more component(s).
+
+<br />
+
+In order for an application to be successfully deployed in Heim, it needs to follow a certain [file structure](#application--file-structure).
+
+Applications also need to be set up with a specific application configuration file, the [application.toml](./../../start-here/configuration/applicationtoml/) file, which defines the [application](#applicationtoml).
+
+<br />
+
+<br />
+
+<br />
+
+### Application – file structure
+
+This example shows the file structure of a simple Rust application, ready to deploy in Heim:
+
+<br />
+
+<FileTree>
+    - \{application-name\}
+        - src
+            - lib.rs
+        - target
+            - ...
+        - .gitignore
+        - Cargo.toml
+        - **component.toml**
+        - **application.toml**
+</FileTree>
+
+<br />
+
+The Rust application structure above can be compared to the structure of a C# application, also ready to deploy in Heim:
+
+<br />
+
+<FileTree>
+  - \{application-name\}
+    - wit
+      - deps
+        - ...
+        - world.wit
+    - .gitignore
+    - **component.toml**
+    - **application.toml**
+    - \{application-name\}.csproj
+    - Program.cs
+</FileTree>
+
+<br />
+
+<br />
+
+If you've read this document from the top, and are familiar with C#, Rust, or both languages, you've probably already spotted our two important configuration files:
+
+- [component.toml](./../../start-here/configuration/componenttoml/)
+- [application.toml](./../../start-here/configuration/applicationtoml/)
+
+<br />
+
+The component.toml file is necessary for defining the contents of the application: one or more components. You can read more about the [component](#component) layer of an application, [in the next section of this document](#component).
+
+Read on to find out more about the [application.toml](#applicationtoml) concept.
+
+<br />
+
+<br />
+
+### Application.toml
+
+Anything published and deployed with Heim is an `application`. Application folders should contain an application configuration file, `application.toml`. 
+This configuration file contains a name for the application, values for environment variables, a component reference, and application trigger definitions.
+
+<br />
+
+This example shows a simple application configuration file (note the comments describing the various values):
+
+`application.toml`
+
+```toml
+name = "neon_db_app"
+component_target = 'neon_db_app:latest'
+
+[trigger.http]
+type = 'http'
+path = 'v1/neon-db-app' ## HTTP path to trigger on
+method = 'GET' # HTTP method to trigger on
+function_target = 'neon-db-app/http'
+
+[env] # Assigns values to the environment variables defined for a component
+NEON_HOST = "INSTANCE.aws.neon.tech"
+NEON_CONNECTION_STRING = "postgresql://user_owner:PASSWORD@INSTANCE.aws.neon.tech/user?sslmode=require"
+```
+
+<br />
+
+You can read more about this file in the [application.toml](./../../start-here/configuration/applicationtoml/) document.
+
+<br />
+
+:::note[creating an application]
+
+You don't have to set up the entire application structure necessary for an application to run in Heim.
+
+We provide application templates you can use for creating a new application in Heim. You can read more about how to use application templates in our ["Getting Started"](./../../start-here/getting-started/#using-applications) document.
+
+You can also check out our [basic rust application example](./../../guides/examples/basic-rust-application/), which walks you through the creation of a new rust application in Heim. Find out more about templates in our [*Templates*](./../templates/) document, or check out our list of [built-in templates](./../../templates/built-in/)
+
+:::
+
+<br />
+
+<br />
+
+<br />
+
+---
+
+<br />
+
+## Component
+
+Any application used in Heim contains one or more _components_. These components hold the source code of your application, and can be individually configured, which affects such matters as how you control the application, how the application build commands work, which environment variables an application should have available, and the component configuration contains metadata for defining and distinguishing between components used by an application.
+
+The component concept used in Heim is based on the WebAssembly component model, which you can read more about in our [general WebAssembly documentation](https://docs.wa2.dev/wasm/concepts-and-features/4-component-model/).
+
+Currently, application folders should contain one component configuration file, `component.toml`. This configuration file contains metadata, any commands that may be used to control a given component, configuration necessary to build the application in different modes, environmental variables used by the application, and more.
+
+<br />
+
+:::caution[beta version]
+
+In the beta version of Heim, applications you create and use will contain one component per application.
+
+In later versions of Heim, we'll support having multiple components per application, and the possibility of publishing a given component to a repository, which in turn allows for installing and using imported components in an application.
+
+Of course, publishing a component will require that the name and metadata fields of the .toml configuration file belonging to that component are filled in correctly.
+
+:::
+
+<br />
+
+Any component should be configured with a .toml file. Currently, you need one _component.toml_.
+
+This example shows a simple component configuration file (note the comments describing the various values):
+
+`component.toml`
+
+```toml
+name = "neon-db-app" # Name of the component
+
+[registry_metadata]
+authors = ["Nor2"] # An array of authors
+description = "Description of neon-db-app" # Description of the component
+license = "MIT OR Apache-2.0 WITH LLVM-exception" # License for the component
+categories = ["nor2"] # What the component should be catagorized under when released to a registry
+
+[commands] # List of commands that can be defined by the developer for a component
+run = "wasmtime serve target/wasm32-wasip1/debug/neon_db_app.wasm --addr=127.0.0.1:8080"
+run_production = "wasmtime serve target/wasm32-wasip1/release/neon_db_app.wasm --addr=127.0.0.1:8080"
+
+[build.dev]
+build = "cargo component build --target=wasm32-wasip1" # The command to build the component from source
+wasm_path = "./target/wasm32-wasip1/debug/neon_db_app.wasm" # The output wasm path
+
+[build.prod]
+build = "cargo component build --target=wasm32-wasip1 --release"
+wasm_path = "./target/wasm32-wasip1/release/neon_db_app.wasm"
+
+[input.env] # Used to define a list of possible environment variables this component can consume
+NEON_HOST = { type = "String" }
+NEON_CONNECTION_STRING = { type = "String" }
+```
+
+<br />
+
+You can read more about this configuration file in the [component.toml](./../../start-here/configuration/componenttoml/) document.
+
+<br />
+
+<br />
+
+<br />
+{/* ## Workspace
+
+todo \*/}
+
+---
+
+## Summary
+
+Any application that is to be deployed and published with the Heim tool needs to follow a specific [application folder structure](#application--file-structure), and contain certain configuration files.
+
+<br />
+
+An application used in Heim consists of two layers:
+
+| layer         | purpose                                                                                                                   |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| _Application_ | An application is the top layer of a deployable unit in Heim. An application may contain one or more components.          |
+| _Component_   | A component holds the source code used in your application. Components can be published and reused in other applications. |
+
+<br />
+
+The configuration files you currently need in a valid application folder are:
+
+| file                   | purpose                                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| _component.toml_       | Configures a component contained in your application. Makes it possible to distinguish between components and to publish components later. |
+| _application.toml_     | Configures your application.                                                                                                               |
