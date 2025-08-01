@@ -1,0 +1,8 @@
+name = "{{name}}"
+component_target = '{{name}}:0.1.0'
+
+[[trigger]]
+type = 'http'
+path = '{{http_trigger_path}}'
+method = '{{http_trigger_method}}'
+

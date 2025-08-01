@@ -1,0 +1,11 @@
+[[variable]]
+key = "http_trigger_path"
+value = "/hello"
+desc = "Http trigger path /??? "
+optional = false
+
+[[variable]]
+key = "http_trigger_method"
+value = "GET"
+desc = "Http trigger method POST/GET"
+optional = false

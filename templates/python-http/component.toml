@@ -1,0 +1,16 @@
+name = "{{name}}"
+version = "0.1.0"
+
+[registry.metadata]
+authors = [""]
+description = "Description of {{name}}"
+license = ""
+categories = [""]
+
+[build.dev]
+build = "componentize-py --world-module nor2_world componentize app -o {{name}}.wasm"
+wasm_path = "./{{name}}.wasm"
+
+[build.prod]
+build = "componentize-py --world-module nor2_world componentize app -o {{name}}.wasm"
+wasm_path = "./{{name}}.wasm"
