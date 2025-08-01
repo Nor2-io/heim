@@ -1,0 +1,16 @@
+name = "{{name}}"
+version = "0.1.0"
+
+[registry.metadata]
+authors = [""]
+description = "Description of {{name}}"
+license = ""
+categories = [""]
+
+[build.dev]
+build = "npm run build"
+wasm_path = "./dist/{{name}}.wasm"
+
+[build.prod]
+build = "npm run build"
+wasm_path = "./dist/{{name}}.wasm"

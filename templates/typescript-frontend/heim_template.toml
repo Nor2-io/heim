@@ -1,0 +1,18 @@
+[[variable]]
+key = "http_trigger_path"
+value = "/frontend"
+desc = "Http trigger path /???* "
+optional = false
+required_prefix = "/"
+
+[[dependency]]
+executable = "node"
+required_version = ">=22.12.0"
+installation_help = "install nodejs from here: https://nodejs.org/en/download"
+
+[[dependency]]
+executable = "npm"
+installation_help = "install npm from here: https://nodejs.org/en/download"
+
+[[pre-command]] 
+execute = "npm create vite@latest ."

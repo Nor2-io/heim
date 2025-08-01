@@ -1,0 +1,19 @@
+[package]
+name = "{{name}}"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[package.metadata.component]
+package = "myorg:{{name}}"
+proxy = false
+
+[dependencies]
+waki = { version = "0.5.0", features = ["json"] }  
+
+# reduce wasm binary size
+[profile.release]
+lto = true
+strip = "symbols"

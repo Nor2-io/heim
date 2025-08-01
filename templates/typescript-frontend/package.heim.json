@@ -1,0 +1,22 @@
+{
+  "name": "{{name}}",
+  "description": "Description of {{name}}",
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf dist heim-dist",
+    "build:embed": "(cd .heim && node generate-embed.js)",
+    "build:frontend": "This will be replaced by the script from Vite.",
+    "build:backend": "(cd .heim && tsc -p tsconfig.heim.json && vite build --config vite.config.heim.ts && jco componentize ../heim-dist/main.js --wit wit/ --world-name nor2-world --out ../heim-dist/{{name}}.wasm)",
+    "build": "npm run clean && npm run build:frontend && npm run build:embed && npm run build:backend",
+    "generate-wit-bindings": "(cd .heim && jco guest-types ./wit -o ./types",
+    "deploy": "heim deploy",
+    "deploy:cloud": "heim deploy --cloud"
+  },
+  "devDependencies": {
+    "@bytecodealliance/componentize-js": "0.18.4",
+    "@bytecodealliance/jco": "1.13.0",
+    "typescript": "5.7.2",
+    "vite": "7.0.6",
+    "rimraf": "6.0.1"
+  }
+}

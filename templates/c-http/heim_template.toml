@@ -1,0 +1,25 @@
+requires_wasi_sdk = true
+required_envs = ["WASI_SDK_PATH"]
+
+[[variable]]
+key = "http_trigger_path"
+value = "/hello"
+desc = "Http trigger path /??? "
+optional = false
+
+[[variable]]
+key = "http_trigger_method"
+value = "GET"
+desc = "Http trigger method POST/GET"
+optional = false
+
+[[dependency]]
+executable = "clang" 
+required_version = ">=16.0.0"
+installation_help = "Download Wasi SDK at https://github.com/WebAssembly/wasi-sdk/releases"
+
+[[dependency]]
+executable = "wit-bindgen"
+required_version = ">=0.12.0"
+installation_help = "Download wit-bindgen at https://github.com/bytecodealliance/wit-bindgen/releases" 
+
