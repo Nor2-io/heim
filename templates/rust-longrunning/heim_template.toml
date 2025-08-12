@@ -1,0 +1,12 @@
+[[dependency]]
+executable = "rustc"
+required_version = ">=1.85"
+installation_help = "install rust from here: https://www.rust-lang.org/tools/install"
+
+[[dependency]]
+executable = "cargo"
+installation_help = "install rust from here: https://www.rust-lang.org/tools/install"
+
+[[dependency]]
+executable = "rustup"
+installation_help = "install rust from here: https://www.rust-lang.org/tools/install"
