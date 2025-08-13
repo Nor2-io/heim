@@ -1,0 +1,221 @@
+---
+title: "Self-hosting on a Raspberry Pi"
+date: 2025-08-11
+lastmod: 2025-08-11
+description: This guide will help you get started with self-hosting Heim on a Raspberry Pi
+---
+
+import {
+  FileTree,
+  Card,
+  CardGrid,
+  LinkCard,
+  Steps,
+} from "@astrojs/starlight/components";
+
+## Prerequisites
+
+<LinkCard
+  title="Getting Started with Heim"
+  href="./../../../start-here/getting-started/"
+/>
+
+- Text Editor - VsCode is a great option with language-specific plugins
+- Terminal - Heim is accessed through its [command-line interface](./../../../cli/cli-reference/)
+- Raspberry Pi (for this guide we're using a Raspberry Pi 5 with 4 gb of RAM)<br />
+<br />
+This guide assumes you already have a Raspberry Pi thats configured with the operating system of your choice. This guide is not for setting up your Raspberry Pi, it is for installing Heim, 
+configuring Heim for self-hosting and deploying an application. Make sure you assign a fixed IP address for your Raspberry Pi and remember it. I assigned `192.168.0.105` to mine.
+
+## Guide
+
+<Steps>
+    <ol>
+        <li>
+        ##### Install Heim on your Raspberry Pi
+        Connect to your Raspberry Pi, either direct with a monitor and keyboard, SSH or remote desktop. While connected open up a terminal on your Raspberry Pi and run the following command:
+        ```sh frame=terminal
+        curl -L "https://cloud.heim.dev/heim/release/download?file=heim.sh" | sh
+        ```
+        This command will install Heim for linux on your Raspberry Pi. <br />
+        Take note of the output at the end of output from running the above command:
+        ```sh frame=terminal
+        Add to your profile to setup path and envs for heim
+        . "/home/pi/.heim/heim/env"
+        ```
+        Follow that instruction and run in the terminal
+        ```sh frame=terminal
+        . "/home/pi/.heim/heim/env"
+        ```
+        This adds enironment variables to your PATH.<br />
+
+        At this point you have Heim installed and can start the runtime with
+        ```sh frame=terminal
+        heim start
+        ```
+        This however would only make Heim work locally on `127.0.0.1` which is not what we want. 
+        </li>
+        <li>
+        ##### Create your own GitHub OAuth application
+        Heim currently only supports GitHub authentication however this authentication can not be used for hosting Heim yourself, you will need to supply your own GitHub OAuth application.<br />
+        <br />
+        Head over to [GitHub](https://github.com), sign in or create a new account.<br />
+        After you have signed in, click your user profile in the top right corner then in the menu that appears click on settings<br />
+        Next, click on developer settings, make sure you are on `GitHub Apps` in the left menu and click on `New GitHub App`<br />
+        Fill out the required fields as you see fit, when you come to the `Callback URL` section you will need to add two callback URLs:
+        ```
+        http://127.0.0.1:3033/callback
+        http://[RASPBERRY PI IP ADDRESS]:[PORT TO EXPOSE RUNTIME ON]/heim/portal/login
+        ```
+        For me this setup looks like this since I assigned `192.168.0.105` to my Raspberry Pi and chose to expose the runtime on port `3000`:
+        ```
+        http://127.0.0.1:3033/callback
+        http://192.168.0.105:3000/heim/portal/login
+        ```
+        You can deselect `Webhook` as it's not needed.<br />
+        Under Permissions, expand the Account permissions tab and select `Read-only` for the field `Email addresses`.<br />
+        Click `Create application`<br />
+        <br />
+        At this point you have a Github OAuth application, at the top you will see a field called `Client ID`, copy that to a file so you have it for later steps. Next we need to generate a 
+        client secret for this application. Go to the client secrets section and click `Generate a new client secret`. Make sure you copy the created secret and store it alongside the `Client ID`.<br />
+        <br />
+        This should be our GitHub OAuth application complete!
+        </li>
+        <li>
+        ##### Make adjustments to our Heim installation
+        Head back to the Raspberry Pi and navigate to `/home/pi/.heim/heim` either in the File manager or a command shell. In that location you will see a file named `heim.json` which we will need to edit.<br />
+        By default this file should look something like this (the hashes might differ and thats fine):
+        ```json
+        {
+          "bin": {},
+          "templates": {},
+          "wasm": {
+            "heim-backend-api": {
+              "hash": "d8e68d4e3a9ab81dfa6e5ffbb371f1ed9578a1befe79ffd29086ce2c092868d0"
+            },
+            "heim-docs": {
+              "hash": "d476204b2454115e477e1117f1b348a206462582bf601412265bb96208f3a2d8"
+            },
+            "heim-local-portal": {
+              "hash": "d8296ff5d62be0ea3d10f3bbe9633a6303d8aa6c5a609a0598d47be06af3e07d"
+            }
+          }
+        }
+        ```
+        This file points out which file hash we are currently using for Heims internal applications. In this file we also have the possibility to override environment variables for these applications.
+        Make the following updates:
+        ```json
+        {
+          "bin": {},
+          "templates": {},
+          "wasm": {
+            "heim-backend-api": {
+              "hash": "3ebcc192220840a5be13ccdec57f90c29e744f61dff93b78e03f6a5130cb71a1",
+              + "env": {
+              +   "GITHUB_CLIENT_ID": { "type": "String", "value": "YOUR_SAVED_CLIENT_ID" },
+              +   "GITHUB_CLIENT_SECRET": { "type": "String", "value": "YOUR_SAVED_CLIENT_SECRET" },
+              +   "GITHUB_REDIRECT_URI": { "type": "String", "value": "http://127.0.0.1:3033/callback" },
+              +   "EXCLUDE_SUBDOMAIN": { "type": "Bool", "value": true }
+              + }
+            },
+            "heim-docs": {
+              "hash": "57eab53531ce02aceeec29240bba19760e67de391fe14da5443a77fc01826bfe"
+            },
+            "heim-local-portal": {
+              "hash": "179d2ec3028cbd538a75d0166a010ca2307fc558329d346081766c01f79a7d51",
+              + "env": {
+              +   "VITE_GITHUB_CLIENT_ID": { "type": "String", "value": "YOUR_SAVED_CLIENT_ID" }
+              + }
+            }
+          }
+        }
+        ```
+        Replace `YOUR_SAVED_CLIENT_ID` and `YOUR_SAVED_CLIENT_SECRET` with the values you saved from when you created the GitHub application.<br />
+        <br />
+        What we are achieving here is telling Heim to:
+        1. Use your own GitHub OAuth application for authentication both in the backend and the frontend.
+        2. Excludes subdomain when deploying applications. Heim by default adds a subdomain to your application when deploying to somewhere that isnt `127.0.0.1` and we dont want that for self-hosting.<br />
+        <br />
+        Save and close this file.
+        </li>
+        <li>
+        ##### Start heim runtime
+        This should be our setup complete. Next is running the heim-runtime, normally you would simply do
+        ```sh frame=terminal
+        heim start
+        ```
+        In a terminal to start the runtime but for self-hosting this wont work. On your Raspberry Pi, navigate to `/home/pi/.heim/heim/bin` either in a command shell or the file explorer.<br />
+        In this folder you will see two files `heim` and `heim-runtime`, where `heim` is the CLI and `heim-runtime` is the runtime which we are going to start manually with some extra flags passed in.<br />
+        In a terminal at the above location run the following:
+        ```sh frame=terminal
+        ./heim-runtime --host [Raspberry PI IP ADDRESS] --port [PORT YOU CHOSE TO EXPOSE RUNTIME ON] --domain [Raspberry PI IP ADDRESS]
+        ```
+        For me this command looks like this with my current setup:
+        ```sh frame=terminal
+        ./heim-runtime --host 192.160.0.105 --port 3000 --domain 192.168.0.105
+        ```
+        Hit enter and you should see something like this at the end of the output:
+        ```sh
+        Http server listening on: http://192.168.0.105:3000
+        Heim portal: http://192.168.0.105:3000/heim/portal/
+        Heim docs: http://192.168.0.105:3000/heim/docs/
+        ```
+        If you see that it means that the runtime started successfully and now you can try and visit the Heim portal address printed from another computer on the same network as the Raspberry Pi.<br />
+        You should first need to authenticate your GitHub application and log in and after that you should be greeted with the Heim portal interface. If you are it means everything went as it should and 
+        you can start using your locally hosted Heim installation!
+        </li>
+        <li>
+        ##### Deploying your first application
+        If you havent yet, make sure to also install Heim (just install the normal way) on your other computer.<br />
+        Next we are going to create a basic template application and deploy it to the Raspberry Pi. Open a terminal and run:
+        ```sh frame=terminal
+        heim new
+        ```
+        This will give you a number of available templates to choose from, I chose `rust-http` with the following options:
+        ```sh frame=terminal
+        ✔ Package name, (Required) · rpi_test
+        ✔ Http trigger path /??? , Default · /hello
+        ✔ Http trigger method POST/GET, (Required) · GET
+        ```
+        This will have create a new folder at the location where you had your CLI. CD into that folder:
+        ```sh frame=terminal
+        cd rpi_test
+        ```
+        Next up, normally when deploying to your local instance that you get from just installing Heim you would do:
+        ```sh frame=terminal
+        heim deploy
+        ```
+        But this would try to deploy to your local Heim instance running on `127.0.0.1` which is not what we want. Instead we are running the following:
+        ```sh frame=terminal
+        heim deploy --host [Raspberry PI IP ADDRESS] --port [PORT YOU CHOSE TO EXPOSE RUNTIME ON]
+        ```
+        Which in my setup looks like this:
+        ```sh frame=terminal
+        heim deploy --host 192.168.0.105 --port 3000
+        ```
+        and if everything is successful you should see something like this at the end of the output:
+        ```sh
+        [GET] http://192.168.0.105:3000/hello
+        ```
+        Which you can try and call with curl:
+        ```sh
+        curl http://192.168.0.105:3000/hello
+        ```
+        which should give you something like this:
+        ```sh
+        StatusCode        : 200
+        StatusDescription : OK
+        Content           : {72, 101, 108, 108...}
+        RawContent        : HTTP/1.1 200 OK
+                            connection: close
+                            transfer-encoding: chunked
+                            Date: Mon, 11 Aug 2025 14:14:24 GMT
+
+                            Hello World
+        Headers           : {[connection, close], [transfer-encoding, chunked], [Date, Mon, 11 Aug 2025 14:14:24 GMT]}
+        RawContentLength  : 11
+        ```
+        You also visit `http://[IP]:[PORT]/heim/portal/applications` and see your application with metrics in the portal.
+        </li>
+    </ol>
+</Steps>
