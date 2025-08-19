@@ -64,14 +64,6 @@ Example value:
 
 <br/>
 
-:::caution[beta version]
-
-In the beta version of Heim, an application will be locked to only one component. Therefore, this field has no effect in the Heim beta.
-
-:::
-
-<br/>
-
 ### trigger definitions
 
 The application.toml can contain triggers definitions.
@@ -90,14 +82,6 @@ type = 'http'
 path = '/test/api/*'
 method = 'All'
 ```
-
-<br/>
-
-:::caution[beta version]
-
-In the beta version of Heim, only http triggers are supported.
-
-:::
 
 <br/>
 
@@ -155,16 +139,6 @@ timeout = '2h'
 ```
 
 Note that any region-specific scaling sections should refer to a region in the main scaling section.
-
-<br/>
-
-:::caution[beta version]
-
-In the beta version of Heim, scaling settings are ignored, but will be displayed in the heim portal.
-
-Use `'localhost'` for all scaling setting region fields in the beta version. Additional regions and region-specific scaling section may be added, and will be visible in the Heim portal, but will not be respected by the Heim tool.
-
-:::
 
 <br/>
 
