@@ -28,6 +28,10 @@ Set the project to use when executing commands
 
 `<PROJECT>` the project id */}
 
+###### `-o`, `--org`
+
+Organization to use when executing commands
+
 ###### `-v`, `--verbose`
 
 Verbose output, include times-stamps, files and rows for print-outs
@@ -39,6 +43,14 @@ Deploy to local instance
 ###### `-C`, `--cloud`
 
 Deploy to cloud
+
+###### `-h`, `--host`
+
+Host to use when deploying application
+
+###### `-p`, `--port`
+
+Port to use when deploying application
 
 ###### `-h`, `--help`
 
@@ -216,6 +228,16 @@ Run clear without prompting.
 ###### `--dry-run`
 
 Print the items that would be removed by clear.
+
+### CIToken [OPTIONS]
+
+```sh frame=none
+heim ci-token [OPTIONS]
+```
+
+Generate a CI-token from your account that can be used for deployments
+
+###### [Global Flags](#global)
 
 {/* ### Exec [OPTIONS] \<COMMAND\>
 
