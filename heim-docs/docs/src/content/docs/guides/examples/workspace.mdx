@@ -1,0 +1,204 @@
+---
+title: Workspace
+description: Using a Heim workspace
+date: 2025-08-21
+lastmod: 2025-08-21
+maxHeadingLevel: 6
+---
+
+import {
+  FileTree,
+  Card,
+  CardGrid,
+  LinkCard,
+  Steps,
+} from "@astrojs/starlight/components";
+
+## Prerequisites
+
+<LinkCard
+  title="Getting Started with Heim"
+  href="./../../../start-here/getting-started/"
+/>
+
+- Language-specific tools - [Install Heim Prerequisites](./../../../start-here/installation/#prerequisites)
+- Heim cli and runtime - [Install Heim](./../../../start-here/installation/#installation)
+- Text Editor - VsCode is a great option with language-specific plugins
+- Terminal - Heim is accessed through its [command-line interface](./../../../cli/cli-reference/)
+
+## Workspace in Heim
+A workspace is a convenience function in Heim that gives you the ability to deploy multiple applications in one 
+command instead of deploying them all one by one.<br />
+<br />
+In a normal workflow you create a new application, make your desired changes and deploy the application. If you
+intend to make multiple applications were each is a single function in a function as a service way you would need
+to deploy each application individually to deploy your entire system which can get tedious and this is were a 
+workspace can help you. Below we will create a workspace consisting of 3 applications<br />
+<br />
+
+For this guide I'm using [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4).
+If you are using a different commdand shell you will have to update the commands accordingly.
+
+## Guide
+<Steps>
+    <ol>
+      <li>
+        #### Create workspace folder
+        Create a folder where you want to create your workspace, I will be using `C:\heim_workspace` for this guide:
+        ``` sh frame=terminal title=PowerShell
+        PS C:\> New-Item -ItemType Directory -Name "heim_workspace"; Set-Location "heim_workspace"
+        ```
+      </li>
+      <li>
+        #### Creating an application and the workspace
+        Next, we are going to create a new heim template with the addition of the `-w` flag which will create your
+        application template and a `heim.toml` file.<br /> 
+        **Take note of the `-w` flag as that is crucial for creating a 
+        workspace or adding a new application to your workspace. If you omit `-w` it will create an application that
+        is not added to your workspace.**<br />
+        Run the following command:
+        ``` sh frame=terminal title=PowerShell
+        PS C:\heim_workspace> heim new -w
+        ```
+        When prompted I made the following choices:
+        ``` sh frame=terminal title=PowerShell
+        ✔ Select template:  · rust-http
+        ✔ Package name, (Required) · first
+        ✔ Http trigger path /??? , Default · /first
+        ✔ Http trigger method POST/GET, (Required) · GET
+        ```
+        If you made the same choices as me, you should see the following in your workspace folder:
+        <FileTree>
+                - first/
+                  - src/
+                    - lib.rs
+                  - .gitignore
+                  - application.toml
+                  - Cargo.toml
+                  - component.toml
+                - heim.toml
+        </FileTree>
+      </li>
+      <li>
+        #### Inspect the workspace file
+        Open up `heim.toml` and inspect it:
+        ```toml title="heim.toml"
+        components = ["first"]
+        ```
+        As you can see there is not a whole lot going on in here. In fact all this does is let the Heim CLI know 
+        that there is an application in this location thats a part of the workspace.
+      </li>
+      <li>
+        #### Adding more applications to your workspace
+        Lets add a couple of more applications to our workspace, for demonstration purposes I will put one application
+        in a subfolder to show that you can add applications in a nested structure. Applications can be added next to 
+        the `heim.toml` file and nested below it in the file structure:
+        ``` sh frame=terminal title=PowerShell
+        PS C:\heim_workspace> heim new -p "subfolder" -w
+        ✔ Select template:  · rust-http
+        ✔ Package name, (Required) · second
+        ✔ Http trigger path /??? , Default · /second
+        ✔ Http trigger method POST/GET, (Required) · GET
+
+        PS C:\heim_workspace> heim new -w
+        ✔ Select template:  · rust-http
+        ✔ Package name, (Required) · third
+        ✔ Http trigger path /??? , Default · /third
+        ✔ Http trigger method POST/GET, (Required) · GET
+        ```
+
+        The first command used the `-p` flag to specify a path to create the second application. The second command
+        created the third application next to heim.toml and the first application. If you followed the guide you should
+        now have this file structure:
+        <FileTree>
+                - first/
+                  - src/
+                    - lib.rs
+                  - .gitignore
+                  - application.toml
+                  - Cargo.toml
+                  - component.toml
+                - subfolder/
+                  - second/
+                    - src/
+                      - lib.rs
+                    - .gitignore
+                    - application.toml
+                    - Cargo.toml
+                    - component.toml
+                - third/
+                  - src/
+                    - lib.rs
+                  - .gitignore
+                  - application.toml
+                  - Cargo.toml
+                  - component.toml
+                - heim.toml
+        </FileTree>
+      </li>
+      <li>
+        #### Inspect heim.toml again
+        If we inspect heim.toml again it should now look like this:
+        ```toml title="heim.toml"
+        components = [
+            "first",
+            'subfolder\second',
+            "third",
+        ]
+        ```
+        As you can see our other two applications have been added with their path relative to the heim.toml file.
+      </li>
+      <li>
+          #### Deploying the workspace
+          At this point we have a workspace consisting of three applications. Now lets assume we have made the changes
+          we want to the applications and are ready to deploy all of our applications. First make sure that Heim is
+          running by running the following command:
+          ``` sh frame=terminal title=PowerShell
+          PS C:\heim_workspace> heim start
+          ```
+          This starts the runtime to where we are going to deploy our workspace. To deploy the workspace run the 
+          following command:
+          ``` sh frame=terminal title=PowerShell
+          PS C:\heim_workspace> heim deploy -w
+          ```
+          If everything goes well you should see your three applications being built and deployed to the runtime.
+          If you followed the guide and used the same paths as I did you should now be able to test your applications:
+          ``` sh frame=terminal title=PowerShell
+          curl http://127.0.0.1:3000/first
+          curl http://127.0.0.1:3000/second
+          curl http://127.0.0.1:3000/third
+          ```
+          All of these should return 200 and Hello world as the message.
+      </li>
+      <li>
+        #### Updating and deploying a single application in your workspace
+        Lets say you want to update what the third application returns. Open up `C:\heim_workspace\third\src\lib.rs`
+        and make the following adjustments:
+        ```diff lang=rust
+        use waki::{handler, ErrorCode, Request, Response};
+
+        #[handler]
+        fn hello(req: Request) -> Result<Response, ErrorCode> {
+            Response::builder()
+                .status_code(200)
+        -       .body("Hello World")
+        +       .body("Hello third application")
+                .build()
+        }
+        ```
+        Now lets deploy just the third application in the workspace by using the `-c` flag. Run the following 
+        command:
+        ``` sh frame=terminal title=PowerShell
+         PS C:\heim_workspace> heim deploy -c third
+        ```
+        **Note: The `-c` flag targets by name, not path. The name is corresponds to the name found in your 
+        component.toml**<br />
+        <br />
+        If everything went well and you run:
+        ``` sh frame=terminal title=PowerShell
+          curl http://127.0.0.1:3000/third
+        ```
+        You should receive the response `Hello third application`.
+      </li>
+    </ol>
+</Steps>
