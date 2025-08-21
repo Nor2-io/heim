@@ -80,9 +80,9 @@ The specification to use to set the template values.
 
 `<SPEC>` the path to the specification.
 
-{/* ###### `-w`, `--workspace`
+###### `-w`, `--workspace`
 
-Add project to existing workspace or create a new workspace if none exists. */}
+Add project to existing workspace or create a new workspace if none exists.
 
 ### Start [OPTIONS]
 
@@ -121,21 +121,6 @@ Build an application with debug information.
 
 Creates an optimized build of an application without debug information.
 
-{/* ###### `-c`, `--component <COMPONENT>`
-
-Target a specific component in a project or app definition. */}
-
-###### `-f <FILE>`, `--file <FILE>`
-<details>
-<summary>Aliases</summary>
-`--component`  
-`--wasm`
-</details>
-
-Target an already built wasm component.
-
-`<FILE>` Path to the wasm component.
-
 ###### `-e <ENVS>`, `--envs <ENVS>`
 
 Add environment values. 
@@ -143,6 +128,25 @@ For non regional environment values:<br/>`--envs env1=value1 --envs env2=value2`
 For region specific values add .REGION to env-name:<br/>`--envs env1.REGION-1=value1 --envs env2.REGION-1=value2`..
 
 `<ENVS>` Environment variables.
+
+###### `-w`, `--workspace`
+
+Builds a workspace.
+
+###### `-c`, `--component <COMPONENT>`
+
+Target a specific component in a workspace.
+
+{/* ###### `-f <FILE>`, `--file <FILE>`
+<details>
+<summary>Aliases</summary>
+`--component`  
+`--wasm`
+</details> */}
+
+Target an already built wasm component.
+
+`<FILE>` Path to the wasm component.
 
 ### Watch [OPTIONS] [EXTRA_ARGUMENTS]
 
