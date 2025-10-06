@@ -35,7 +35,7 @@ export const incomingHandler = {
         outputStream[Symbol.dispose]();
       }
       outgoingResponse.setStatusCode(404);
-      ResponseOutparam.set(outgoingResponse, {
+      ResponseOutparam.set(responseOutparam, {
         tag: "ok",
         val: outgoingResponse,
       });
@@ -53,7 +53,7 @@ export const incomingHandler = {
 
       outgoingResponse.headers
 
-      ResponseOutparam.set(outgoingResponse, {
+      ResponseOutparam.set(responseOutparam, {
         tag: "ok",
         val: outgoingResponse,
       });
