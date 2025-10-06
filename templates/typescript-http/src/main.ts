@@ -36,7 +36,7 @@ export const incomingHandler = {
     // Finish the response body
     OutgoingBody.finish(outgoingBody, undefined);
     // Set the created response to an "OK" Result<T> value
-    ResponseOutparam.set(outgoingResponse, {
+    ResponseOutparam.set(responseOutparam, {
       tag: "ok",
       val: outgoingResponse,
     });
