@@ -1,0 +1,9 @@
+[[variable]]
+key = "schedule"
+value = "0 0 * * * *"
+desc = "Cron-schedule '0 0 * * * *' runs once every hour"
+optional = false
+
+[[dependency]]
+executable = "wasm32-wasi-ghc"
+installation_help = "install rust from here: https://gitlab.haskell.org/haskell-wasm/ghc-wasm-meta"

@@ -1,0 +1,14 @@
+name = "{{name}}"
+version = "0.1.0"
+
+[build.dev]
+build = "wasm32-wasi-ghc src/main.hs -o {{name | replace(from="-", to="_") }}.wasm"
+wasm_path = "{{name | replace(from="-", to="_") }}.wasm"
+
+[build.prod]
+build = "wasm32-wasi-ghc src/main.hs -o {{name | replace(from="-", to="_") }}.wasm"
+wasm_path = "{{name | replace(from="-", to="_") }}.wasm"
+
+
+[input.env]
+TEST = { type = "String", default = "Test env" }
