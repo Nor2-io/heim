@@ -12,5 +12,5 @@ optional = false
 
 [[dependency]]
 executable = "componentize-py"
-required_version = ">=0.17.0"
+required_version = ">=0.19.1"
 installation_help = "install by running 'pip install componentize-py' or upgrade an existing installation with 'pip install componentize-py --upgrade --force-reinstall'"
