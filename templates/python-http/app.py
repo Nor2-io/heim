@@ -2,10 +2,10 @@ import asyncio
 import hashlib
 import poll_loop
 
-from nor2_world import exports
-from nor2_world.types import Ok
-from nor2_world.imports import types
-from nor2_world.imports.types import (
+from componentize_py_types import Ok
+from wit_world import exports
+from wit_world.imports import types
+from wit_world.imports.types import (
     Method_Get,
     Method_Post,
     Scheme,

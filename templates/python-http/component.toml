@@ -8,9 +8,9 @@ license = ""
 categories = [""]
 
 [build.dev]
-build = "componentize-py --world-module nor2_world componentize app -o {{name}}.wasm"
+build = "componentize-py -d ./wit --world nor2:heim/nor2-world componentize app -o {{name}}.wasm"
 wasm_path = "./{{name}}.wasm"
 
 [build.prod]
-build = "componentize-py --world-module nor2_world componentize app -o {{name}}.wasm"
+build = "componentize-py -d ./wit --world nor2:heim/nor2-world componentize app -o {{name}}.wasm"
 wasm_path = "./{{name}}.wasm"
