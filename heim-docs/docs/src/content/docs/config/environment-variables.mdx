@@ -1,0 +1,118 @@
+---
+title: Environment Variables
+description: Environment Variables Reference
+date: 2025-11-07
+lastmod: 2025-11-09
+maxHeadingLevel: 6
+---
+
+## Supported Types
+The following environment variable types are supported:
+- String
+- Bool
+- F32
+- F64
+- I8
+- I16
+- I32
+- I64
+- U8
+- U16
+- U32
+- U64
+
+The type is checked and enforced at compile time, if the value doesn't match the type, then you will get an error. 
+
+## Environment Definitions
+Definitions of variables are defined in the `component.toml` file of your application.
+Variables not defined here will not be picked up by your application.
+The reason for having variables be defined before they are declared is that we can guarantee that your application has the variables it needs to run and if it's missing then the application will error out at build time instead of at runtime.
+This becomes especially useful if you are using a component created by someone else, now the component author can define it's requirements of environment variables and the person using that component is guaranteed to not miss this requirement.
+
+Example configuration:
+```toml
+[input.env]
+TEST0 = { type = "String" } # Required environment variable with no default value.
+TEST1 = { type = "String", optional = false, default = "Hello" } # Required environment variable with default value of "Hello".
+TEST2 = { type = "String", default = "Hello" } # Same as above. Optional = false by default.
+
+TEST3 = { type = "String", optional = true, default = "Hello" } 
+TEST4 = { type = "String", optional = true } # Will not be set, so your code needs to be able to handle the environment variable not being set.
+```
+
+## Environment Declaration
+There are multiple ways of declaring environment variables.
+
+Environment variables can be declared for all regions an application is deployed to or configured per region.
+
+### Application.toml
+You can declare environment variables directly in your applications `application.toml` file.
+The downside of declaring environment values directly inside of `application.toml` is that it will be included in your source control which you don't necessarily want especially if you are keeping sensitive information in env variables like database connections strings or API secret keys.
+So environment variables defined in your `application.toml` should be stuff that isn't sensitive, that you want easily sharable with other team members working on the same application.
+
+If you define a default value an environment variable then all regions an application is deployed to will get that value unless it's explicitly overridden for a specific region.
+
+Example configuration:
+```toml
+[env]
+TEST0 = "Hello World!"
+
+[env.upcloud-se-1]
+TEST0 = "Hello World from UpCloud Stockholm!"
+
+[env.heim-localhost]
+TEST0 = "Hello World from Localhost!"
+```
+
+### dotenv files
+Heim supports dotenv files that was popularized by the [dotenv npm package](https://github.com/motdotla/dotenv).
+This is the recommended way to work with environment variables during development.
+
+Defining default values for env variables can be done by creating a `.env` file in the same directory as your `application.toml`.
+```.env
+NAME="Bob"
+```
+
+A variable can also be unset by adding a `-` before the name of an environment variable.
+Unsetting an environment variable means that from the applications point of view it's not defined. Which is different from the environment variable being set to `None` or `null`.
+
+Example:
+```.env
+-NAME # Unset's NAME
+```
+
+In order to create an `.env` file that applies to a specific region you just add the region name after `.env` separated by a dot. For example: `.env.upcloud-se-1` would allow you to set specific values to the `upcloud-se-1` region.
+
+:::caution
+Never commit `.env` files. Add `.env` and `.env.*` to your `.gitignore` file.
+:::
+
+
+### CLI Parameters
+To pass a in the default value for an environment variable you append the following parameter when deploying your application `--env NAME="SOME VALUE"` and to do it for a specific region you would pass `--env NAME.REGION="SOME VALUE"`.
+For example for `upcloud-se-1` you would write `--env NAME.upcloud-se-1="SOME VALUE"`.
+
+### System Environment Variables
+Default env variables are defined like the following:
+`HEIM.NAME`
+
+Region specific env variables are defined like the following:
+`HEIM_REGION_NAME`
+For example for the region `upcloud-se-1` with the environment variable name of `CONNECTION_STRING` you would declare the following system environment variable:
+`HEIM.upcloud-se-1.CONNECTION_STRING`
+
+### Hierarchical Ordering
+Environment variables follow an hierarchical order in how environment variables are resolved.
+Default values always have the lowest priority and never take precedence over region specific values.
+
+From lowest to highest priority:
+
+- `component.toml` default value
+- `application.toml` default value
+- `.env` default value
+- `system env` default value
+- `cli arg` default value
+- `application.toml` region specific value
+- `.env` region specific value
+- `system env` region specific value
+- `cli arg` region specific value

@@ -1,0 +1,19 @@
+---
+title: Capabilities
+description: Capabilities - Functions and restrictions for applications
+date: 2025-11-07
+lastmod: 2025-11-09
+maxHeadingLevel: 6
+---
+
+Capabilities is how you define what am application should have access to.
+
+### Restricting HTTP API
+
+You can configure what endpoints your application can access by adding a capabilities section and then defining `allowed-outgoing-url`.
+
+Example:
+```toml
+[capabilities]
+allowed-outgoing-url = ["https://upcloud.com/*"]
+```

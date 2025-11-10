@@ -1,12 +1,12 @@
 ---
 title: "application.toml"
 date: 2024-11-30
-lastmod: 2024-12-18
+lastmod: 2025-11-07
 tags: []
 description: "Description of the application.toml files used for configuring applications"
 ---
 
-A Nor<sup>2</sup> Heim application.toml file is used to define a application in Heim.
+A Nornor Heim application.toml file is used to define an application in Heim.
 
 The application.toml is required for deploying an application to Heim.
 
@@ -24,10 +24,10 @@ This example shows a simple application.toml file:
 name = "example-application"
 component_target = 'example-application:latest'
 
-[trigger.http]
+[[trigger]]
 type = 'http'
 path = '/test/api/*'
-method = 'All'
+method = 'ALL'
 
 [env]
 variable1 = "Value for variable1"
@@ -40,7 +40,7 @@ max-cpu = 2
 timeout = '1h'
 
 [capabilities]
-allowed-outgoing-url = ["https://dummyjson.com/*", "https://www.google.com/*"]
+allowed-outgoing-url = ["https://upcloud.com/*", "https://dummyjson.com/*"]
 ```
 *An example application application.toml*
 
@@ -72,15 +72,15 @@ The application.toml can contain triggers definitions.
 | ---------- | ------------------------------------------------------------------------------------------------------------------- | ----------|
 | _type_     | trigger type in `string` format, example: `http`                                                                    | **yes**   |
 | _path_     | relative path in `string` format, example: `/test/api/` and the path can also include wildcards `*`                 | **yes**   |
-| _method_   | method value string – `GET`, `POST`, `PATCH`,`HEAD`, `OPTIONS`, `TRACE`, `PUT`, `DELETE`, `CONNECT` or `All`        | **yes**   |
+| _method_   | method value string – `GET`, `POST`, `PATCH`,`HEAD`, `OPTIONS`, `TRACE`, `PUT`, `DELETE`, `CONNECT` or `ALL`        | **yes**   |
 
 This is an example trigger definition declaration, for a trigger called "trigger.http":
 
 ```toml
-[trigger.http]
+[[trigger]]
 type = 'http'
 path = '/test/api/*'
-method = 'All'
+method = 'ALL'
 ```
 
 <br/>
@@ -121,7 +121,7 @@ This is an example of a main scaling section:
 
 ```toml
 [scaling]
-region = ['localhost']
+region = ['heim-localhost']
 max-parallel = 4
 max-memory = '1GiB'
 max-cpu = 2
@@ -131,7 +131,7 @@ timeout = '1h'
 This is an example of a region-specific scaling section:
 
 ```toml
-[scaling.eu-west-1]
+[scaling.upcloud-se-1]
 max-parallel = 2
 max-memory = '500MiB'
 max-cpu = 1
@@ -153,7 +153,7 @@ This is an example of a capabilities section with two allowed URLs:
 ```toml
 
 [capabilities]
-allowed-outgoing-url = ["https://dummyjson.com/*", "https://www.google.com/*"]
+allowed-outgoing-url = ["https://upcloud.com/*", "https://dummyjson.com/*"]
 ```
 
 <br/>
