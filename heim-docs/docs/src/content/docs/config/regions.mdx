@@ -6,9 +6,9 @@ lastmod: 2025-11-07
 maxHeadingLevel: 6
 ---
 
-Configuring where your application is ran can be done by adding a scaling section to your `application.toml`. In this scaling section you then define regions which takes an array or regions that you want to run your application within.
-If no scaling section or regions are defined and there only is one region available then it will default to deploying to that region. In the case of a free account this will be `upcloud-se-1` which is the [UpCloud](https://upcloud.com/) Stockholm 1 region.
+Configuring where your application is ran can be done by adding a scaling section to your `application.toml`. In this scaling section you then define region which takes an array or regions that you want to run your application within.
+If no scaling section or region are defined and there only is one region available then it will default to deploying to that region. In the case of a free account this will be `upcloud-se-1` which is the [UpCloud](https://upcloud.com/) Stockholm 1 region.
 ```toml
 [scaling]
-regions = ["upcloud-se-1"]
+region = ["upcloud-se-1"]
 ```
