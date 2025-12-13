@@ -1,0 +1,10 @@
+name = "{{name}}"
+component_target = '{{name}}:0.1.0'
+
+[[trigger]]
+type = 'job'
+timeout = '{{timeout}}'
+allow_parallel = {{allow_parallel}}
+
+[capabilities]
+allowed-outgoing-url = ["https://dummyjson.com/*"]

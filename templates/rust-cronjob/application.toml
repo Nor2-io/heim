@@ -4,5 +4,4 @@ component_target = '{{name}}:0.1.0'
 [[trigger]]
 type = 'cron'
 schedule = '{{schedule}}'
-timeout = 0
-
+timeout = '{{timeout}}'
