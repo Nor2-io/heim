@@ -1,13 +1,13 @@
 [[variable]]
-key = "schedule"
-value = "0 0 0/12 * * *"
-desc = "Cron-schedule '0 0 0/12 * * *' runs once every 12 hour"
-optional = false
-
-[[variable]]
 key = "timeout"
 value = "60"
 desc = "Max-execution time in seconds"
+optional = false
+
+[[variable]]
+key = "allow_parallel"
+var_typ = "Bool"
+desc = "Allow parallel on a single node, if true we can run X queued jobs at the same time."
 optional = false
 
 [[dependency]]

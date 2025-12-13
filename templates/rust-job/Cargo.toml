@@ -8,6 +8,12 @@ path = "src/main.rs"
 name = "{{name | replace(from="-", to="_") }}"
 
 [dependencies]
+clap = { version = "4.5.50", features = [
+    "derive",
+    "deprecated",
+    "cargo",
+    "env",
+] }
 [target.'cfg(target_os = "wasi")'.dependencies]
 wstd = { version = "0.6.3", features = ["json"] }
 
