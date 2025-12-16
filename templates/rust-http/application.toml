@@ -6,3 +6,5 @@ type = 'http'
 path = '{{http_trigger_path}}'
 method = '{{http_trigger_method}}'
 
+[capabilities]
+allowed-outgoing-url = ["https://dummyjson.com/*"]
