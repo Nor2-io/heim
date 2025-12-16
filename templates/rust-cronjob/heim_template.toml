@@ -1,7 +1,7 @@
 [[variable]]
 key = "schedule"
-value = "0 0 0/12 * * *"
-desc = "Cron-schedule '0 0 0/12 * * *' runs once every 12 hour"
+value = "0 0 */12 * * *"
+desc = "Cron-schedule '0 0 */12 * * *' runs once every 12 hour"
 optional = false
 
 [[variable]]
