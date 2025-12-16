@@ -3,7 +3,7 @@ component_target = '{{name}}:0.1.0'
 
 [[trigger]]
 type = 'job'
-timeout = '{{timeout}}'
+timeout = {{timeout}}
 allow_parallel = {{allow_parallel}}
 
 [capabilities]

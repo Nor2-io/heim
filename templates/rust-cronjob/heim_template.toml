@@ -6,7 +6,8 @@ optional = false
 
 [[variable]]
 key = "timeout"
-value = "60"
+value = 30
+var_type = "Int"
 desc = "Max-execution time in seconds"
 optional = false
 
