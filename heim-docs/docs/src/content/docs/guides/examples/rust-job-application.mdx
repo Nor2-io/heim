@@ -1,0 +1,646 @@
+---
+title: "Rust Job Application"
+date: 2024-12-13
+lastmod: 2025-06-12
+description: This guide will help you get up and running with a basic Rust Job Application
+---
+
+import {
+  FileTree,
+  Card,
+  CardGrid,
+  LinkCard,
+  Steps,
+} from "@astrojs/starlight/components";
+
+## Prerequisites
+
+<LinkCard
+  title="Getting Started with Heim"
+  href="./../../../start-here/getting-started/"
+/>
+
+- Language-specific tools - [Install Heim Prerequisites](./../../../start-here/installation/#prerequisites)
+- Heim cli and runtime - [Install Heim](./../../../start-here/installation/#installation)
+- Text Editor - VsCode is a great option with language-specific plugins
+- Terminal - Heim is accessed through its [command-line interface](./../../../cli/cli-reference/)
+
+## Guide
+
+<Steps>
+    <ol>
+        <li>
+            
+            <br/>
+            
+            Start by running `heim new` to create a project from a template. 
+            
+            <br/>
+            
+            :::note[template]
+            In this guide we will be using the **rust-job** template.
+            :::
+
+            <br/>
+
+            Use the up/down arrow keys to select the template and press enter:
+
+            ``` sh frame=terminal title="Heim Cli"
+            heim@system:~/repos$ heim new
+            ? Select template:  ›
+            c-http
+            csharp-http
+            csharp-http-async
+            go-http
+            python-http
+            rust-cronjob
+            rust-http
+            ...
+           ❯  rust-job
+            ...
+            rust-job
+            rust-longrunning
+            typescript-frontend
+            typescript-http
+            openapi-specification
+            ```
+
+            <br/>
+
+            :::tip
+            The first part can be done by running one command:
+
+            `heim new rust-job`
+
+            Use `heim template list` to get a list of available templates.
+            :::
+
+            <br/>
+
+            <br/>
+
+            Next, we will choose the timeout of the job (This is equivalent to max-execution-time)
+
+            For this we will choose the default value of `30`:
+
+            ``` sh frame=terminal title="Heim Cli"
+            ✔ Select template:  · rust-job
+            Required dependencies:
+            ✅ rustc, installed 1.92.0, required >=1.85
+            ✅ cargo
+            ✅ rustup
+            
+            ? Max-execution time in seconds, Default (30) ›
+            ```
+
+            <br/>
+
+            Next, we need to choose Allow parallel on a single node.
+
+            <br/>
+
+            ``` sh frame=terminal title="Heim Cli"
+            ✔ Select template:  · rust-job
+            Required dependencies:
+            ✅ rustc, installed 1.92.0, required >=1.85
+            ✅ cargo
+            ✅ rustup
+            
+            ✔ Max-execution time in seconds, Default · 20
+            ? Allow parallel on a single node, if true we can run X queued jobs at the same time., (Required) › 
+            ```
+
+            <br/>
+
+            <br/>
+
+            Last, we will need to set the name of the application.
+
+            ``` sh frame=terminal title="Heim Cli"
+            ✔ Select template:  · rust-job
+            Required dependencies:
+            ✅ rustc, installed 1.92.0, required >=1.85
+            ✅ cargo
+            ✅ rustup
+            
+            ✔ Max-execution time in seconds, Default · 20
+            ✔ Allow parallel on a single node, if true we can run X queued jobs at the same time., (Required) · true
+            ? Package name, (Required) › my-job-trigger
+
+            Rendered Template: ""/tmp/heimQ2z7DE/my-job-trigger/component.toml""
+            Rendered Template: ""/tmp/heimQ2z7DE/my-job-trigger/application.toml""
+            Rendered Template: ""/tmp/heimQ2z7DE/my-job-trigger/.gitignore""
+            Rendered Template: ""/tmp/heimQ2z7DE/my-job-trigger/README.md""
+            Rendered Template: ""/tmp/heimQ2z7DE/my-job-trigger/src/main.rs""
+            Rendered Template: ""/tmp/heimQ2z7DE/my-job-trigger/Cargo.toml""
+            [00:00:00] ########################################       5/5       Success
+            INFO [ Heim new ] New component created: Some("/home/heim/repos/my-job-trigger")
+            ```
+            <br/>
+
+            Once we've gone through all the previous steps, we'll have a project ready to go.
+
+            <br/>
+
+            <br/>
+
+            <br/>
+
+        </li>
+        <li>
+
+            <br/>
+
+            Let's open the project in your text editor to check on what our new application looks like...
+
+            <br/>
+
+            Now, you will have an application folder with this structure:
+
+            <FileTree>
+                - src/
+                    - main.rs
+                - .gitignore
+                - Cargo.toml
+                - **component.toml**
+                - **application.toml**
+                - README.md
+            </FileTree>
+
+            Take note of the marked configuration files. Let's take a look at these files, next.
+
+            <br/>
+
+            <br/>
+
+            #### component.toml
+
+            The [component.toml](./../../../application/config/componenttoml/) file, defines a component, and one or more components make up an application in Heim.
+
+            <br/>
+
+            `component.toml`
+            ```toml
+            name = "my-job-trigger"
+            version = "0.1.0"
+            
+            [build.dev]
+            build = "cargo build --target=wasm32-wasip2"
+            wasm_path = "target/wasm32-wasip2/debug/my_job_trigger.wasm"
+            
+            [build.prod]
+            build = "cargo build --target=wasm32-wasip2 --release"
+            wasm_path = "target/wasm32-wasip2/release/my_job_trigger.wasm"
+            ```
+            _a simple component.toml, with explanatory comments_
+
+            <br/>
+
+            <LinkCard title="Read more about component.toml" href="./../../../application/config/componenttoml/" />
+
+            <br/>
+
+            <br/>
+
+            #### application.toml
+
+            The [application.toml](./../../../application/config/applicationtoml/) is what defines an application. A application.toml is required for deploying an application to Heim.
+
+            <br/>
+
+            `application.toml`
+            ```toml
+            name = "my-job-trigger"
+            component_target = 'my-job-trigger:0.1.0'
+            
+            [[trigger]]
+            type = 'job'
+            timeout = 20
+            allow_parallel = true
+            
+            [capabilities]
+            allowed-outgoing-url = ["https://dummyjson.com/*"]
+            ```
+            _a simple application.toml, with explanatory comments_
+
+            <br/>
+
+            <LinkCard title="Read more about application.toml" href="./../../../application/config/applicationtoml/" />
+
+            <br/>
+
+            <br/>
+
+            <br/>
+
+        </li>
+        <li>
+
+            <br/>
+
+            Open `src/main.rs` and take a look at the code we have:
+
+            `lib.rs`
+            ```rust
+            use clap::{Parser, Subcommand};
+            use std::{env, error::Error};
+            
+            #[derive(Parser, Debug)]
+            #[command(name = "Clap args", about = "A Heim job demo, for arguments")]
+            struct Cli {
+                #[command(subcommand)]
+                command: Commands,
+            }
+            
+            #[derive(Subcommand, Debug)]
+            enum Commands {
+                DummyJson {
+                    #[arg(short, long, default_value = "recipe")]
+                    path: String,
+                },
+            }
+            
+            const DUMMY_JSON_BASE_URL: &str = "https://dummyjson.com";
+            
+            fn main() {
+                if let Err(err) = runtime::run() {
+                    eprintln!("{err}");
+                    std::process::exit(1);
+                }
+            }
+            
+            #[cfg(target_os = "wasi")]
+            mod runtime {
+                use std::error::Error;
+                #[wstd::main]
+                pub async fn run() -> Result<(), Box<dyn Error>> {
+                    wstd::runtime::block_on(async move { super::async_main().await })
+                }
+            }
+            
+            #[cfg(not(target_os = "wasi"))]
+            mod runtime {
+                use std::error::Error;
+            
+                pub async fn run() -> Result<(), Box<dyn Error>> {
+                    let rt = tokio::runtime::Runtime::new().unwrap();
+            
+                    rt.block_on(async move { super::async_main().await })
+                }
+            }
+            
+            async fn async_main() -> Result<(), Box<dyn Error>> {
+                let cli = Cli::try_parse_from(env::args())?;
+            
+                match cli.command {
+                    Commands::DummyJson { path } => {
+                        let url_with_path = format!("{DUMMY_JSON_BASE_URL}/{}", path);
+                        let contents = http_get_request(&url_with_path).await?;
+                        println!("We performed a GET operation against {url_with_path}");
+                        println!("Response: {contents}");
+                    }
+                }
+            
+                Ok(())
+            }
+            
+            pub async fn http_get_request(url: &str) -> Result<String, Box<dyn Error>> {
+                // Wasi
+                #[cfg(target_os = "wasi")]
+                {
+                    use wstd::http::{Body, Client, Request};
+                    let request = Request::get(url).body(Body::empty())?;
+                    let response = Client::new().send(request).await?;
+                    let mut body = response.into_body();
+                    let contents = body.str_contents().await?;
+                    Ok(contents.to_string())
+                }
+                // Not Wasi
+                #[cfg(not(target_os = "wasi"))]
+                {
+                    use reqwest::Client;
+                    let client = Client::builder().build()?;
+                    let response = client.get(url).send().await?;
+                    let text = response.text().await?;
+                    Ok(text)
+                }
+            }
+
+            ```
+
+            <br/>
+
+            The main.rs file contains boilerplate source code.
+
+            <br/>
+
+            <br/>
+
+            Now, we want to start the application. Read on to learn the steps needed to start an application.
+
+            <br/>
+
+            <Steps>
+                <ol>
+                    <li>
+
+                        <br/>
+
+                        Run [heim start](./../../../cli/cli-reference/#start-options), to start the heim runtime:
+
+                        ```sh title="heim runtime"
+                        heim@system:~/repos$ heim start
+                          _   _          _                                        _     _
+                         | | | |   ___  (_)  _ __ ___      _ __   _   _   _ __   | |_  (_)  _ __ ___     ___
+                         | |_| |  / _ \ | | | '_ ` _ \    | '__| | | | | | '_ \  | __| | | | '_ ` _ \   / _ \
+                         |  _  | |  __/ | | | | | | | |   | |    | |_| | | | | | | |_  | | | | | | | | |  __/
+                         |_| |_|  \___| |_| |_| |_| |_|   |_|     \__,_| |_| |_|  \__| |_| |_| |_| |_|  \___|
+                        
+                        
+                        Heim runtime v1.3.0 is now starting
+                        
+                        Start process-runtime with Max-active-cronjobs: 3, Max-active-long-running: 3, Max-active-jobs: 3
+                        
+                        Http server listening on: http://127.0.0.1:3000
+                        Heim portal: http://127.0.0.1:3000/heim/portal/
+                        Heim docs: http://127.0.0.1:3000/heim/docs/
+                        ```
+
+                        <br/>
+
+                        Note that the [Heim portal](./../../../start-here/heim-portal/) comes included with any Heim installation, and that it will be available on [`http://127.0.0.1:3000/heim/portal/`](http://127.0.0.1:3000/heim/portal/) once you've installed Heim.
+
+                        <br/>
+
+                        <br/>
+
+                        <br/>
+
+                    </li>
+                    <li>
+
+                        <br/>
+
+                        To build the application and deploy it to our local-instance, we will run [heim deploy](./../../../cli/cli-reference/#deploy-options-module). By default, this will create a *debug* build, but we can change it to a *release* build with the `--release` flag:
+
+                        ```sh title="heim cli"
+                        heim@system:~/repos$ heim deploy
+                        INFO [ Heim::Deploy ] Building Component: my-job-trigger
+                            Compiling my-job-trigger v0.1.0 (/home/work/repos/myapp)
+                            ...
+                            Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.18s
+                        INFO [ heim_registry::registry ] "my-job-trigger":"0.1.0":8e0f8b50fcc282e0387712dac062cd96dc1bc40f3539138f7cb7209f25e37972
+                        INFO [ Heim::Deploy ] Heim application `my-job-trigger` is now built and written to registry.
+                        INFO [ ResolvedConfig ] Environment variables per region:
+                        
+                        INFO [ Heim::Pipeline ] Starting pipeline 'Deploy application'
+                        INFO [ Heim::Pipeline ] Application required WASI-exports are all fulfilled
+                        INFO [ Heim::Pipeline ] Storing unoptimized component state
+                        INFO [ Heim::Pipeline ] Checking if defined regions in app definition is valid
+                        INFO [ Heim::Pipeline ] Continuing with localhost region heim-localhost
+                        INFO [ Heim::Pipeline ] Getting region specific application environment values
+                        INFO [ Heim::Pipeline ] Set environment values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Getting region specific application scaling values
+                        INFO [ Heim::Pipeline ] Set scaling values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Getting capabilities
+                        INFO [ Heim::Pipeline ] Set capabilities values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Getting triggers
+                        INFO [ Heim::Pipeline ] Set trigger values for region 'heim-localhost'
+                        INFO [ Heim::Pipeline ] Component environment values are valid for all regions
+                        INFO [ Heim::Pipeline ] Checking for region with changes to build
+                        INFO [ Heim::Pipeline ] Region "heim-localhost" has been changed and will be built
+                        INFO [ Heim::Pipeline ] Storing component and optimized component
+                        INFO [ Heim::Pipeline ] Stored component at ''
+                        INFO [ Heim::Pipeline ] Stored optimized component at ''
+                        INFO [ Heim::Pipeline ] Storing region states
+                        INFO [ Heim::Pipeline ] Stored state for region(s) heim-localhost successfully
+                        INFO [ Heim::Pipeline ] Creating and caching application(s)
+                        INFO [ Heim::Pipeline ] Creating and caching application(s) for region(s) heim-localhost
+                        INFO [ Heim::Pipeline ] Created application with hash 93590f2ae22d20d47018bcc152d6ebb2af6c28d7be4f675c9c7e3d2e48fe34e1 for region(s) heim-localhost
+                        INFO [ Heim::Pipeline ] Application has been deployed for region(s) heim-localhost
+                        INFO [ Heim::Pipeline ] Pipeline 'Deploy application' finished with status 'Success'
+                        INFO [ Heim::Deploy ] Heim deploy pipeline was successful
+                        INFO [ Heim::Deploy ] Application is deployed as:
+                        INFO [ Heim::Deploy ] Job Timeout: [20] Allow-parallel: [true]
+                        ```
+                        <br/>
+
+                        <br/>
+
+                        From here, you can see that we are able to access the see application on `http://127.0.0.1:3000/heim/portal/applications/`
+                        
+                        <br/>
+
+                        <br/>
+
+                        To deploy the application to the cloud instance, we will run [heim deploy](./../../../cli/cli-reference/#deploy-options-module) with the `--cloud` flag.
+                        This will generate a *release* build as default, but it can be changed to a *debug* with the the `--dev` flag.
+
+                        This will deploy the application to your subdomain at `my-subdomain.cloud.heim.dev`
+
+                        ```sh title="heim cli"
+                        heim@system:~/repos$ heim deploy --cloud
+
+                        INFO [ heim_registry::registry ] "my-job-trigger":"0.1.0":8e0f8b50fcc282e0387712dac062cd96dc1bc40f3539138f7cb7209f25e37972
+                        INFO [ Heim::Deploy ] Heim application `my-job-trigger` is now built and written to registry.
+                        INFO [ ResolvedConfig ] Environment variables per region:
+                        
+                        INFO [ Heim::Pipeline ] Starting pipeline 'Deploy application'
+                        INFO [ Heim::Pipeline ] Application required WASI-exports are all fulfilled
+                        INFO [ Heim::Pipeline ] Storing unoptimized component state
+                        INFO [ Heim::Pipeline ] Checking if defined regions in app definition is valid
+                        INFO [ Heim::Pipeline ] Continuing with se-1 region upcloud-se-1
+                        INFO [ Heim::Pipeline ] Getting region specific application environment values
+                        INFO [ Heim::Pipeline ] Set environment values for region 'upcloud-se-1'
+                        INFO [ Heim::Pipeline ] Getting region specific application scaling values
+                        INFO [ Heim::Pipeline ] Set scaling values for region 'upcloud-se-1'
+                        INFO [ Heim::Pipeline ] Getting capabilities
+                        INFO [ Heim::Pipeline ] Set capabilities values for region 'upcloud-se-1'
+                        INFO [ Heim::Pipeline ] Getting triggers
+                        INFO [ Heim::Pipeline ] Set trigger values for region 'upcloud-se-1'
+                        INFO [ Heim::Pipeline ] Component environment values are valid for all regions
+                        INFO [ Heim::Pipeline ] Checking for region with changes to build
+                        INFO [ Heim::Pipeline ] Region "upcloud-se-1" has been changed and will be built
+                        INFO [ Heim::Pipeline ] Storing component and optimized component
+                        INFO [ Heim::Pipeline ] Stored component at ''
+                        INFO [ Heim::Pipeline ] Stored optimized component at ''
+                        INFO [ Heim::Pipeline ] Storing region states
+                        INFO [ Heim::Pipeline ] Stored state for region(s) upcloud-se-1 successfully
+                        INFO [ Heim::Pipeline ] Creating and caching application(s)
+                        INFO [ Heim::Pipeline ] Creating and caching application(s) for region(s) upcloud-se-1
+                        INFO [ Heim::Pipeline ] Created application with hash 93590f2ae22d20d47018bcc152d6ebb2af6c28d7be4f675c9c7e3d2e48fe34e1 for region(s) upcloud-se-1
+                        INFO [ Heim::Pipeline ] Application has been deployed for region(s) upcloud-se-1
+                        INFO [ Heim::Pipeline ] Pipeline 'Deploy application' finished with status 'Success'
+                        INFO [ Heim::Deploy ] Heim deploy pipeline was successful
+                        INFO [ Heim::Deploy ] Application is deployed as:
+                        INFO [ Heim::Deploy ] Job Timeout: [20] Allow-parallel: [true]
+                        ```
+
+                        <br/>
+
+                        <br/>
+
+                    </li>
+                </ol>
+            </Steps>
+        </li>
+        <li>
+
+            <br/>
+
+            Now, we can use the Heim-portal to execute our Job-trigger application, with the [Run New Job](./../../../application/job/#heim-portal)
+
+            <br/>
+
+            <br/>
+        </li>
+        <li>
+
+            <br/>
+
+            When we are done, we can use the shortcut `Ctrl+C` to shut down the runtime.
+
+            <br/>
+
+            To clean up any resources from the guide you can run `heim clear`. This will remove all data from the cache.
+
+            <br/>
+
+            :::caution[heim clear]
+            You will need to redeploy the application the next time you want to run it, if you use the `heim clear` command.
+            :::
+
+            <br/>
+
+            <br/>
+
+        </li>
+    </ol>
+
+</Steps>
+
+<br />
+
+<br />
+
+<br />
+
+---
+
+<br />
+
+## Summary
+
+<br />
+
+1. - run `heim new`
+   - select the rust-http `template`
+   - choose `Max-execution time`
+   - choose `allow_parallel`
+   - set application `name`
+
+   {" "}
+
+   <br />
+   <br />
+
+2. - open the created application folder/project in your text editor
+
+   _Take note of the configuration files:_
+
+   :::note[component.toml]
+   component.toml defines a component.
+
+   An application is made up by one or more components.
+   :::
+
+   :::note[application.toml]
+   application.toml defines an application.
+   :::
+
+   <br />
+
+   <br />
+
+3. - open `main.rs` in the `src` folder:
+
+   :::note[main.rs]
+   main.rs contains boilerplate source code for your application.
+   :::
+
+   {" "}
+
+   <br />
+
+   - run `heim start` to start the Heim runtime
+
+   :::note[Heim portal]
+   The Heim portal comes included with a Heim installation.
+
+   Once the Heim runtime is started, the Heim portal is available on [http://127.0.0.1:3000/heim/portal/](http://127.0.0.1:3000/heim/portal/).
+   :::
+
+   {" "}
+
+   <br />
+
+   - run `heim deploy` to build and deploy the application.
+
+   :::note[heim deploy --release]
+   The `heim deploy --release` creates a _release_ build.
+
+   Just type `heim deploy` to create a _development_ build.
+   :::
+
+   {" "}
+
+   <br />
+
+   - run `heim deploy --cloud` to deploy the application to the cloud instance.
+
+   {" "}
+
+   <br />
+
+   :::tip[heim runtime]
+   The Heim runtime will print out relevant information about the application.
+   :::
+
+   <br />
+
+   <br />
+
+4. - Trigger an execution of the application in Heim-Portal
+
+   {" "}
+
+   <br />
+
+   {" "}
+
+   <br />
+
+5. - use the `Ctrl+C` shortcut to shut down the Heim runtime
+   - use the `heim clear` command to remove all data from cache
+
+   {" "}
+
+   <br />
+
+   :::caution[heim clear]
+   You will need to redeploy the application the next time you want to run it, if you use the `heim clear` command.
+   :::
+
+<br />
+
+<br />
+
+---
+
+<br />
+
+## References
+
+- [Run New Job](./../../../application/job/#heim-portal)
+- [component.toml](./../../../application/config/componenttoml/)
+- [application.toml](./../../../application/config/applicationtoml/)

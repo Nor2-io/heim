@@ -6,6 +6,11 @@ lastmod: 2025-11-07
 maxHeadingLevel: 6
 ---
 
+Triggers in Heim decides how the application should be executed how under what premise.<br />
+We currently doesn't support a mix of different triggers in a single Heim-application, but you can have x number of the same trigger in a application if its Cron- or a Http-trigger.
+
+You also have a limitation of how many applications you can have with a Cron or Job-trigger as well, and this [Organization-limits](./../../../organization/limits/) can be found under your Organization in Heim-portal.
+
 ## Http Trigger
 An HTTP trigger is a way to invoke an application through HTTP requests. It creates a publicly accessible endpoint that responds to web requests.
 HTTP triggers are typically used for webhooks, API endpoints, and serverless functions that need to respond to incoming HTTP requests.
@@ -30,6 +35,19 @@ This will create a HTTP trigger that will trigger on the HTTP method `GET` and o
 
 ## Cron Trigger
 
+CRON triggers are ideal for any task that needs to run automatically on a predictable schedule without manual intervention.
+
+Required fields:
+* **schedule**: Cron-expression 6-digit representation see description below.
+* **timeout**: execution-timeout in seconds, max allowed value is bounded [Organization-limits](./../../../organization/limits/)
+
+**Common Use Cases:**
+- Scheduled reports: Generate and send reports daily, weekly, or monthly
+- Data cleanup: Run maintenance tasks at off-peak hours
+- Batch processing: Process accumulated data at regular intervals
+- Automated backups: Schedule regular data backups
+- Periodic checks: Monitor external services or APIs at set times
+
 Cron Expression (6-digit representation):
 The schedule is defined using five space-separated fields that determine when the trigger fires:
 
@@ -47,20 +65,33 @@ The schedule is defined using five space-separated fields that determine when th
 - Lists (e.g., `1,3,5`)
 - Step values (e.g., `*/15` for "every 15 minutes")
 
-**Common Use Cases:**
-- Scheduled reports: Generate and send reports daily, weekly, or monthly
-- Data cleanup: Run maintenance tasks at off-peak hours
-- Batch processing: Process accumulated data at regular intervals
-- Automated backups: Schedule regular data backups
-- Periodic checks: Monitor external services or APIs at set times
-
-CRON triggers are ideal for any task that needs to run automatically on a predictable schedule without manual intervention.
-
 **Example cron trigger configuration:**
 ```toml
 [[trigger]]
 type = 'cron'
-schedule = '0 0/2 * * * *'
+schedule = '0 */2 * * * *'
+timeout = 60
+```
+
+## Job Trigger
+
+Job triggers are a work-load that only gets executed on-command, so each execution gets queued up by either or Api or through Heim-portal.<br />
+This is also the only executable that accepts regular command-line arguments for each execution.<br /> 
+Limited to maximum queue-size and how many executions you are allow per month.
+
+Required fields:
+* **timeout**: execution-timeout in seconds, max allowed value is bounded [Organization-limits](./../../../organization/limits/)
+* **allow_parallel**: if you allow running multiple instance of queued works on the same node, most use-cases this should be true.
+
+**Common Use Cases:**
+- Off-loaded request: For images-transforms performed after a user sets a profile picture and the images is not needed directly.
+
+**Example job trigger configuration:**
+```toml
+[[trigger]]
+type = 'job'
+allow_parallel = true
+timeout = 60
 ```
 
 ## Long-Running Trigger

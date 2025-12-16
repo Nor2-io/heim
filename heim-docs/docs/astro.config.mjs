@@ -33,7 +33,7 @@ export default defineConfig({
           autogenerate: { directory: "start-here" },
         },
         {
-          label: "Application",
+          label: "Applications",
           autogenerate: { directory: "application" },
         },
         {
