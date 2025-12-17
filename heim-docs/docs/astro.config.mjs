@@ -14,7 +14,7 @@ export default defineConfig({
         dark: "./src/assets/logo-dark.svg",
         replacesTitle: true,
       },
-      favicon: "./src/assets/favicon.png",
+      favicon: "./favicon.png",
       social: [
         {
           icon: "github",

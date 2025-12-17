@@ -1,9 +1,9 @@
 use http::Response;
-use include_dir::{include_dir, Dir};
+use include_dir::{Dir, include_dir};
 use wstd::http::{
+    IntoBody, Request, StatusCode,
     body::IncomingBody,
     server::{Finished, Responder},
-    IntoBody, Request, StatusCode,
 };
 static DIST_DIR: Dir = include_dir!("./docs/dist");
 const HEIM_NOT_FOUND_TEMPLATE: &str = r#"
@@ -107,6 +107,7 @@ async fn main(request: Request<IncomingBody>, responder: Responder) -> Finished 
             .status(StatusCode::OK)
             .header(http::header::CONTENT_TYPE, guess.essence_str())
             .header(http::header::ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+            .header(http::header::CACHE_CONTROL, "public, max-age=7200")
             .body(data.into_body())
             .unwrap(),
         None => Response::builder()

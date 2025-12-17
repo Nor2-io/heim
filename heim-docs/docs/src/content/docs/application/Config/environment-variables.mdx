@@ -69,7 +69,7 @@ Heim supports dotenv files that was popularized by the [dotenv npm package](http
 This is the recommended way to work with environment variables during development.
 
 Defining default values for env variables can be done by creating a `.env` file in the same directory as your `application.toml`.
-```.env
+```dotenv
 NAME="Bob"
 ```
 
@@ -77,7 +77,7 @@ A variable can also be unset by adding a `-` before the name of an environment v
 Unsetting an environment variable means that from the applications point of view it's not defined. Which is different from the environment variable being set to `None` or `null`.
 
 Example:
-```.env
+```dotenv
 -NAME # Unset's NAME
 ```
 
