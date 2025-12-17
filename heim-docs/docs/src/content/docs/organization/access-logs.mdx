@@ -2,8 +2,60 @@
 title: Organization Access Logs
 description: Understanding Organization Access Logs
 date: 2025-11-07
-lastmod: 2025-11-09
+lastmod: 2025-12-16
 maxHeadingLevel: 6
 ---
 
-Access logs show all type of modifications that are done to an organizations settings, members, projects or applications.
+The Audit Log provides a comprehensive, immutable record of all actions performed within your organization by users and API tokens. It captures every interaction with your cloud infrastructure, including resource modifications, authentication events, configuration changes, and application deployments.
+What the Audit Log Tracks
+The Audit Log records activity across your entire organization, including:
+- **User Actions**: All activities performed by organization members through the web console, CLI, or API
+- **API Token Operations**: Automated actions executed by CI/CD pipelines, service accounts, and integration tokens
+- **Authentication Events**: Login attempts, session creations, and authentication failures
+- **Resource Management**: Creation, modification, and deletion of cloud resources across all services
+- **Configuration Changes**: Updates to organization settings, access policies, and security configurations
+- **Administrative Activities**: Member invitations, role assignments, and permission modifications
+
+## Use Cases
+**Security Monitoring and Threat Detection**
+Monitor for unauthorized access attempts, suspicious activity patterns, and potential security incidents. Failed login attempts, unusual access locations, and privilege escalation attempts are automatically logged with high severity ratings for immediate review.
+
+**Compliance and Audit Requirements**
+Maintain the detailed access records required for SOC 2, GDPR, HIPAA, PCI DSS, and other regulatory frameworks. The audit log provides auditors with complete visibility into who accessed resources, what actions they performed, and when those actions occurred.
+
+**Incident Response and Forensics**
+When incidents occur, the audit log serves as the authoritative source for reconstructing events. Security and operations teams can trace the complete timeline of actions leading to and following an incident, identifying root causes and determining blast radius.
+
+**Change Tracking and Debugging**
+Track all configuration changes, deployments, and infrastructure modifications. When troubleshooting issues, teams can review recent changes to identify what might have caused unexpected behavior and determine appropriate remediation steps.
+
+**Access Accountability**
+Establish clear attribution for all system activities by tying every action to a specific user or API token.
+
+## Retention and Access
+Currently the retention of audit logs are set to 30 days.
+In a future release this will be configurable and set within an organizations retention policy and allow for exporting the audit log to external systems.
+
+## Log Information
+Each log entry includes comprehensive metadata: actor identity, action performed, affected resource, originating location/IP address, timestamp, completion status, and severity level.
+
+### Actor
+Identifies the entity that performed the action. For human users, displays the user's full name along with their browser and operating system (e.g., "Chrome on macOS"). For automated systems, displays the API token identifier with the label "Automated".
+### Action
+Describes the operation that was performed by the user or token. Common actions include authentication events, project modifications, application deployments, and administrative changes.
+### Resource
+Specifies the system component or service that was accessed or modified. Resources represent logical boundaries within the platform such as Organization, Project or Application.
+### Location
+Provides geographic and network information about where the action originated. For human users, displays the city, state, and IP address. For CI/CD tokens, displays the CI platform name and IP address. Shows "Unknown" when location data cannot be determined.
+### Timestamp
+Records the date and time when the action occurred, all timestamps are stored in UTC time. When viewed in the browser all timestamps are converted to your local date and time format.
+### Status
+Indicates whether the action completed successfully or failed. A checkmark (✓) denotes successful completion, while an X (✗) indicates failure.
+### Severity
+Classifies the security or operational impact level of the logged event:
+
+**info:** Low-risk routine operations
+
+**warning:** Moderate-risk actions requiring review
+
+**critical:** High-risk events requiring immediate attention, such as failed authentication attempts or unauthorized access
