@@ -59,9 +59,10 @@ You will need an API-token created, and then you can deploy jobs with the follow
 
 **Endpoint**: https://cloud.heim.dev/heim/api/v2/application/heim-rust-job/add-job
 **Method**: POST
-Headers:
-**Authorization**: Bearer < REPLACE_WITH_API_TOKEN>
-Body:
+**Headers:**
+  **Authorization**: Bearer < REPLACE_WITH_API_TOKEN>
+  **Content-Type**: application/json
+**Body:**
 ```json
 {
     "jobs": [
