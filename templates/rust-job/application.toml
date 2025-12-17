@@ -2,9 +2,9 @@ name = "{{name}}"
 component_target = '{{name}}:0.1.0'
 
 [[trigger]]
-type = 'cron'
-schedule = '{{schedule}}'
+type = 'job'
 timeout = {{timeout}}
+allow_parallel = {{allow_parallel}}
 
 [capabilities]
 allowed-outgoing-url = ["https://dummyjson.com/*"]

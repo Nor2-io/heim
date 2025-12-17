@@ -1,0 +1,60 @@
+use std::{error::Error};
+
+const DUMMY_JSON_BASE_URL: &str = "https://dummyjson.com/recipe";
+
+fn main() {
+    if let Err(err) = runtime::run() {
+        eprintln!("{err}");
+        std::process::exit(1);
+    }
+}
+
+#[cfg(target_os = "wasi")]
+mod runtime {
+    use std::error::Error;
+
+    pub fn run() -> Result<(), Box<dyn Error>> {
+        wstd::runtime::block_on(async move { super::async_main().await })
+    }
+}
+
+#[cfg(not(target_os = "wasi"))]
+mod runtime {
+    use std::error::Error;
+
+    pub fn run() -> Result<(), Box<dyn Error>> {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+
+        rt.block_on(async move { super::async_main().await })
+    }
+}
+
+async fn async_main() -> Result<(), Box<dyn Error>> {
+    let contents = http_get_request(DUMMY_JSON_BASE_URL).await?;
+    println!("We performed a GET operation against {DUMMY_JSON_BASE_URL}");
+    println!("Response: {contents}");
+
+    Ok(())
+}
+
+pub async fn http_get_request(url: &str) -> Result<String, Box<dyn Error>> {
+    // Wasi
+    #[cfg(target_os = "wasi")]
+    {
+        use wstd::http::{Body, Client, Request};
+        let request = Request::get(url).body(Body::empty())?;
+        let response = Client::new().send(request).await?;
+        let mut body = response.into_body();
+        let contents = body.str_contents().await?;
+        Ok(contents.to_string())
+    }
+    // Not Wasi
+    #[cfg(not(target_os = "wasi"))]
+    {
+        use reqwest::Client;
+        let client = Client::builder().build()?;
+        let response = client.get(url).send().await?;
+        let text = response.text().await?;
+        Ok(text)
+    }
+}

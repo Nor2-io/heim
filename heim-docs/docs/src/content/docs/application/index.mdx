@@ -1,16 +1,21 @@
 ---
-title: "Application Structure"
-date: 2024-12-06
-lastmod: 2024-12-19
-tags: []
-description: A brief overview of the Heim application structure
+title: Application
+description: Heim Application - What is an Heim application
+date: 2025-12-12
+lastmod: 2025-12-12
+maxHeadingLevel: 6
 sidebar:
-  order: 3
+  label: Overview
+  order: 0
 ---
 
-import { FileTree } from "@astrojs/starlight/components";
+import { FileTree, Icon } from "@astrojs/starlight/components";
+
+Heim currently supports creating applications with `C#`, `Python`, `JavaScript` / `TypeScript`, `Rust`, `C` and `Go`.<br />
 
 Any application folder deployed in Heim should contain certain configuration files, and follow a specific structure. This document contains a brief description of what an application should contain in order to be successfully deployed.
+
+We compile the applications to a <Icon name="seti:wasm" label="C# language icon" class="inline-icon" /> [WebAssembly Component Model](https://component-model.bytecodealliance.org/), with Heim and deploys this wasm-file directly to the Heim-runtime either locally or to our cloud-instances.
 
 ## Application
 
@@ -20,7 +25,7 @@ An application can be seen as a wrapper, or container, that holds one or more co
 
 In order for an application to be successfully deployed in Heim, it needs to follow a certain [file structure](#application--file-structure).
 
-Applications also need to be set up with a specific application configuration file, the [application.toml](./../../start-here/configuration/applicationtoml/) file, which defines the [application](#applicationtoml).
+Applications also need to be set up with a specific application configuration file, the [application.toml](./../../application/config/applicationtoml/) file, which defines the [application](#applicationtoml).
 
 ### Application – file structure
 
@@ -55,8 +60,8 @@ The Rust application structure above can be compared to the structure of a C# ap
 
 If you've read this document from the top, and are familiar with C#, Rust, or both languages, you've probably already spotted our two important configuration files:
 
-- [component.toml](./../../start-here/configuration/componenttoml/)
-- [application.toml](./../../start-here/configuration/applicationtoml/)
+- [component.toml](./../../application/config/componenttoml/)
+- [application.toml](./../../application/config/applicationtoml/)
 
 The component.toml file is necessary for defining the contents of the application: one or more components. You can read more about the [component](#component) layer of an application, [in the next section of this document](#component).
 
@@ -84,7 +89,7 @@ method = 'GET' # HTTP method to trigger on
 NEON_CONNECTION_STRING = "postgresql://user_owner:PASSWORD@INSTANCE.aws.neon.tech/user?sslmode=require"
 ```
 
-You can read more about this file in the [application.toml](./../../start-here/configuration/applicationtoml/) document.
+You can read more about this file in the [application.toml](./../../application/config/applicationtoml/) document.
 
 :::note[creating an application]
 
@@ -135,7 +140,7 @@ wasm_path = "./target/wasm32-wasip2/release/neon_db_app.wasm"
 NEON_CONNECTION_STRING = { type = "String" }
 ```
 
-You can read more about this configuration file in the [component.toml](./../../start-here/configuration/componenttoml/) document.
+You can read more about this configuration file in the [component.toml](./../../application/config/componenttoml/) document.
 
 {/* ## Workspace
 

@@ -1,0 +1,32 @@
+---
+title: Limitations
+description: Limitations with Heim-applications
+date: 2025-12-12
+lastmod: 2025-12-12
+maxHeadingLevel: 6
+sidebar:
+  label: Limitations
+  order: 1
+---
+
+Limitations with Heim-applications
+
+#### We only support one trigger type per application
+We are currently only support one type of [Trigger](./../config/triggers) per application. <br />
+
+#### Native TLS-handshake (https) varies per language
+Using http-clients for performing TLS handshake varies because per language because of different implementation in the compiling tooling.<br />
+This can force you to only use libraries that implement a specific version or make it possible to replace underlying parts in the library.
+
+| Language   | Native support | Limitation                   |
+|------------|----------------|------------------------------|
+| C-sharp    | ✅             | Only for dotnet 10.*-preview |
+| Typescript | ✅             | Only with the [Fetch-api](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) |
+| Rust       | ✅             | Only with [reqwest-wasi](https://crates.io/crates/reqwest_wasi) or [wstd](https://crates.io/crates/wstd) |
+| Go         | ✅              | Need to use [Wit-bindgen](https://github.com/bytecodealliance/wit-bindgen) for [wasi-http](https://github.com/webassembly/wasi)   |
+| Python     | ✅              | Need to use [Wit-bindgen](https://github.com/bytecodealliance/wit-bindgen) for [wasi-http](https://github.com/webassembly/wasi)                            |
+| C          | ✅              | Need to use [Wit-bindgen](https://github.com/bytecodealliance/wit-bindgen) for [wasi-http](https://github.com/webassembly/wasi)                            |
+
+#### Sockets are disabled
+Using database client is currently not fully supported through sockets because of missing TLS handling for sockets in Webassembly. <br />
+Current work-around is using a http-proxy for databases instead or use an database with builtin http-api support.
