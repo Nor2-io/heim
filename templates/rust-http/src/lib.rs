@@ -1,9 +1,14 @@
-use waki::{handler, ErrorCode, Request, Response};
+use axum::{
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, Router},
+};
 
-#[handler]
-fn hello(req: Request) -> Result<Response, ErrorCode> {
-    Response::builder()
-        .status_code(200)
-        .body("Hello World")
-        .build()
+#[wstd_axum::http_server]
+fn main() -> Router {
+    Router::new().route("/hello", get(handler))
+}
+
+async fn handler() -> impl IntoResponse {
+    (StatusCode::Ok, "Hello, World!").into_response()
 }

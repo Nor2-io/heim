@@ -11,7 +11,13 @@ package = "myorg:{{name}}"
 proxy = false
 
 [dependencies]
-waki = { version = "0.5.0", features = ["json"] }  
+wstd = { version = "0.6.3", features = ["json"] }
+wstd-axum = { version = "0.6.3" }
+axum = { version = "0.8.8", default-features = false, features = [
+    "query",
+    "json",
+    "macros",
+] }
 
 # reduce wasm binary size
 [profile.release]
