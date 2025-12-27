@@ -59,7 +59,7 @@ async fn get_body_handler(Query(params): Query<HashMap<String, String>>) -> Resp
         Err(e) => {
             return Response::builder()
                 .status(StatusCode::INTERNAL_SERVER_ERROR)
-                .body(format!("We failed to retrieve the response: {e}"))
+                .body(format!("Failed to retrieve the response: {e}"))
                 .unwrap();
         }
     };
