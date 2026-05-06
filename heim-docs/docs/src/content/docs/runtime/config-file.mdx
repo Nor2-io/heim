@@ -1,0 +1,124 @@
+---
+title: "Configuration File"
+description: TOML format, lookup order, and a complete config.toml example for the Heim runtime.
+date: 2026-05-06
+lastmod: 2026-05-06
+sidebar:
+  order: 2
+---
+
+The Heim runtime reads its configuration from a TOML file. Every parameter from the [Runtime Configuration](./configuration) reference can be set there, grouped into sections that mirror the runtime modules.
+
+## Lookup order
+
+The runtime resolves which `config.toml` to load using the first match in this order:
+
+1. Path passed to `--config <FILE>`.
+2. `$HEIM_HOME/config.toml`, if `HEIM_HOME` is set.
+3. `<user-home>/.heim/config.toml`.
+4. `./config.toml` in the working directory.
+
+If none of these exist the runtime starts with built-in defaults.
+
+## Precedence
+
+Within a single field, sources are layered:
+
+```text
+default  <  config.toml  <  environment variable  <  CLI argument
+```
+
+CLI arguments and env variables override the file, so the file is the right place for stable per-environment defaults and the CLI/env layer is the right place for short-lived overrides.
+
+The runtime prints, for every field, which source supplied the active value at startup — useful when a value is not what you expect.
+
+## Section layout
+
+| TOML section | Purpose |
+| --- | --- |
+| `[server]` | Listen address, node identity, request timeouts, background work limits, WASM runtime knobs |
+| `[database]` | Connection string, pool size, embedded Postgres paths, log retention |
+| `[cache]` | In-memory cache size and TTL, max WASM bundle size |
+| `[open-telemetry]` | OTLP endpoints, protocol, auth, timeouts |
+| `[s3]` | Required only when `server.deploy-layer = "S3"` |
+| `[azure-blob-storage]` | Required only when `server.deploy-layer = "Azure"` |
+
+`[s3]` and `[azure-blob-storage]` are optional blocks — omit them entirely if you are not using that backend.
+
+## Example `config.toml`
+
+```toml
+# A complete example showing every field with its default value.
+# In real configs, only set the fields you want to override.
+
+[server]
+host = "127.0.0.1"
+port = 3000
+region = "heim-localhost"
+domain = "127.0.0.1"
+runtime-pool-size = 10
+deploy-layer = "FileSystem"          # Memory | FileSystem | S3 | Azure
+request-timeout = 30                 # seconds
+allow-wasi-sockets = false
+server-domains = []
+# private-network-starts-with = "10."  # required for admin pages
+# node-exporter-metrics-folder = "/var/lib/heim/metrics"
+
+# Background work
+max-active-jobs = 3
+max-active-cronjobs = 3
+max-active-long-running = 3
+load-background-work-every-x-second = 10
+clean-up-background-work-every-x-second = 60
+trigger-refresh-every-x-second = 2
+remove-deleted-applications-every-x-second = 60
+
+[database]
+# db-conn = "postgres://user:pass@localhost:5432/heim"  # omit for embedded Postgres
+db-capacity = 30
+db-clear = false
+db-delete-logs-older-than-x-days = 30
+
+[cache]
+cache-size = 100
+cache-time-to-idle-minutes = 5
+wasm-max-deploy-size = 500           # MB
+
+[open-telemetry]
+metrics-endpoint = "http://127.0.0.1:50051"
+traces-endpoint  = "http://127.0.0.1:50051"
+logs-endpoint    = "http://127.0.0.1:50051"
+protocol = "Grpc"                    # Grpc | Http | Debug
+timeout = 4                          # seconds
+metrics-reader-duration = 10         # seconds
+# api-key = "..."
+# api-secret = "..."
+
+# Only when server.deploy-layer = "S3"
+# [s3]
+# s3-region   = "eu-north-1"
+# s3-bucket   = "heim-apps"
+# s3-endpoint = "https://s3.eu-north-1.amazonaws.com"
+# s3-api-key    = "..."
+# s3-api-secret = "..."
+
+# Only when server.deploy-layer = "Azure"
+# [azure-blob-storage]
+# account    = "myaccount"
+# access-key = "..."
+# container  = "heim-apps"
+```
+
+## Pointing the runtime at a file
+
+```bash
+heim-runtime --config /etc/heim/config.toml
+```
+
+Or place it where auto-discovery will find it:
+
+```bash
+mkdir -p ~/.heim
+mv config.toml ~/.heim/config.toml
+heim-runtime
+```

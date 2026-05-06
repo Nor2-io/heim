@@ -1,0 +1,74 @@
+---
+title: "Environment Variables"
+description: Alphabetical reference of every environment variable the Heim runtime reads.
+date: 2026-05-06
+lastmod: 2026-05-06
+sidebar:
+  order: 3
+---
+
+Quick lookup for every environment variable the Heim runtime reads. For full descriptions, types, and grouping, see [Runtime Configuration](./configuration).
+
+Env variables override `config.toml` and are themselves overridden by CLI arguments. See [Configuration File](./config-file) for the precedence rules.
+
+## Alphabetical index
+
+| Environment variable | Default | Maps to |
+| --- | --- | --- |
+| `HEIM_CUSTOM_USER_HOME` | OS user home | Override the user home directory used by Heim |
+| `HEIM_HOME` | unset | Override the Heim install directory used to locate `config.toml` |
+| `HEIM_RUNTIME_ALLOW_WASI_SOCKETS` | `false` | `server.allow-wasi-sockets` |
+| `HEIM_RUNTIME_ARCHICTECTURE` | `{ARCH}-{OS}-{FAMILY}` | `server.architecture` |
+| `HEIM_RUNTIME_AZURE_BLOB_STORAGE_ACCOUNT` | required when using Azure | `azure-blob-storage.account` |
+| `HEIM_RUNTIME_AZURE_BLOB_STORAGE_CONTAINER` | required when using Azure | `azure-blob-storage.container` |
+| `HEIM_RUNTIME_AZURE_BLOB_STORAGE_KEY` | required when using Azure | `azure-blob-storage.access-key` |
+| `HEIM_RUNTIME_CACHE_SIZE` | `100` | `cache.cache-size` |
+| `HEIM_RUNTIME_CACHE_TIME_TO_IDLE_MINUTES` | `5` | `cache.cache-time-to-idle-minutes` |
+| `HEIM_RUNTIME_CACHE_WASM_MAX_SIZE` | `500` | `cache.wasm-max-deploy-size` (MB) |
+| `HEIM_RUNTIME_CLEAN_UP_BACKGROUND_WORK_EVERY_X_SECOND` | `60` | `server.clean-up-background-work-every-x-second` |
+| `HEIM_RUNTIME_DB_CAPACITY` | `30` | `database.db-capacity` |
+| `HEIM_RUNTIME_DB_CLEAR_DB` | `false` | `database.db-clear` |
+| `HEIM_RUNTIME_DB_CONN` | unset (embedded Postgres) | `database.db-conn` |
+| `HEIM_RUNTIME_DB_DELETE_LOGS_OLDER_THAN_X_DAYS` | `30` | `database.db-delete-logs-older-than-x-days` |
+| `HEIM_RUNTIME_DB_EMBEDDED_PASSWORD_FILE_PATH` | `{HEIM_DATA}/.pgpass` | `database.db-embedded-password-file-path` |
+| `HEIM_RUNTIME_DB_EMBEDDED_STORAGE_PATH` | `{HEIM_DATA}/pg-db` | `database.db-embedded-storage-path` |
+| `HEIM_RUNTIME_DEPLOY_LAYER` | `FileSystem` | `server.deploy-layer` |
+| `HEIM_RUNTIME_DOMAIN` | `127.0.0.1` | `server.domain` |
+| `HEIM_RUNTIME_HOST` | `127.0.0.1` | `server.host` |
+| `HEIM_RUNTIME_LOAD_BACKGROUND_WORK_EVERY_X_SECOND` | `10` | `server.load-background-work-every-x-second` |
+| `HEIM_RUNTIME_MAX_ACTIVE_CRONJOBS` | `3` | `server.max-active-cronjobs` |
+| `HEIM_RUNTIME_MAX_ACTIVE_JOBS` | `3` | `server.max-active-jobs` |
+| `HEIM_RUNTIME_MAX_ACTIVE_LONG_RUNNING` | `3` | `server.max-active-long-running` |
+| `HEIM_RUNTIME_POOL_SIZE` | `10` | `server.runtime-pool-size` |
+| `HEIM_RUNTIME_PORT` | `3000` | `server.port` |
+| `HEIM_RUNTIME_REGION` | `heim-localhost` | `server.region` |
+| `HEIM_RUNTIME_REMOVE_DELETED_APPLICATION_EVERY_X_SECOND` | `60` | `server.remove-deleted-applications-every-x-second` |
+| `HEIM_RUNTIME_REQUEST_TIMEOUT` | `30` | `server.request-timeout` (seconds) |
+| `HEIM_RUNTIME_S3_API_KEY` | required when using S3 | `s3.s3-api-key` |
+| `HEIM_RUNTIME_S3_API_SECRET` | required when using S3 | `s3.s3-api-secret` |
+| `HEIM_RUNTIME_S3_BUCKET` | required when using S3 | `s3.s3-bucket` |
+| `HEIM_RUNTIME_S3_ENDPOINT` | optional | `s3.s3-endpoint` |
+| `HEIM_RUNTIME_S3_REGIOIN` | required when using S3 | `s3.s3-region` |
+| `HEIM_RUNTIME_TARGET_TRIPLE` | host triple | `server.target-triple` |
+| `HEIM_RUNTIME_TELEMETRY_API_KEY` | unset | `open-telemetry.api-key` |
+| `HEIM_RUNTIME_TELEMETRY_API_SECRET` | unset | `open-telemetry.api-secret` |
+| `HEIM_RUNTIME_TELEMETRY_LOGS_ENDPOINT` | `http://127.0.0.1:50051` | `open-telemetry.logs-endpoint` |
+| `HEIM_RUNTIME_TELEMETRY_METRICS_ENDPOINT` | `http://127.0.0.1:50051` | `open-telemetry.metrics-endpoint` |
+| `HEIM_RUNTIME_TELEMETRY_METRICS_READER_DURATION` | `10` | `open-telemetry.metrics-reader-duration` (seconds) |
+| `HEIM_RUNTIME_TELEMETRY_PROTOCOL` | `Grpc` | `open-telemetry.protocol` (`Grpc` \| `Http` \| `Debug`) |
+| `HEIM_RUNTIME_TELEMETRY_TIMEOUT` | `4` | `open-telemetry.timeout` (seconds) |
+| `HEIM_RUNTIME_TELEMETRY_TRACES_ENDPOINT` | `http://127.0.0.1:50051` | `open-telemetry.traces-endpoint` |
+| `HEIM_RUNTIME_TRIGGER_REFRESH_EVERY_X_SECOND` | `2` | `server.trigger-refresh-every-x-second` |
+
+## CLI environment variables
+
+These are read by the `heim` CLI, not by the runtime process itself.
+
+| Environment variable | Default | Purpose |
+| --- | --- | --- |
+| `HEIM_CI_TOKEN` | unset | CI deployment token (hidden from `--help`) |
+| `HEIM_ORGANIZATION` | unset | Default organization for CLI commands |
+| `HEIM_PROJECT` | unset | Default project for CLI commands |
+| `GITHUB_CLIENT_ID` | unset | GitHub client ID for self-hosted setups |
+
+`HEIM_RUNTIME_HOST` and `HEIM_RUNTIME_PORT` are also honored by the CLI when targeting a runtime.

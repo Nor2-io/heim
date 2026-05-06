@@ -45,6 +45,10 @@ export default defineConfig({
           autogenerate: { directory: "cli" },
         },
         {
+          label: "Runtime",
+          autogenerate: { directory: "runtime" },
+        },
+        {
           label: "Templates",
           autogenerate: { directory: "templates" },
         },
