@@ -1,0 +1,165 @@
+---
+title: "Runtime Configuration"
+description: Reference of every Heim runtime parameter, its environment variable, and its default value.
+date: 2026-05-06
+lastmod: 2026-05-06
+maxHeadingLevel: 6
+sidebar:
+  order: 1
+---
+
+import { Badge } from "@astrojs/starlight/components";
+
+The Heim runtime is configured through three sources, listed in order of precedence:
+
+1. **CLI arguments** (e.g. `--port 4000`)
+2. **Environment variables** (e.g. `HEIM_RUNTIME_PORT=4000`)
+3. **TOML configuration file** (auto-discovered or passed via `--config`)
+4. **Built-in defaults**
+
+If a value is set in more than one place, the highest-precedence source wins. The runtime prints which source each value came from at startup.
+
+See [Configuration File](./config-file) for the TOML layout, and [Environment Variables](./environment-variables) for an alphabetical env var index.
+
+:::note[tags]
+`<REQUIRED>` indicates the value must be set
+`[OPTIONAL]` indicates the value has no default
+:::
+
+## Server
+
+TOML section: `[server]`
+
+| Parameter | Env variable | Default | Type |
+| --- | --- | --- | --- |
+| `host` | `HEIM_RUNTIME_HOST` | `127.0.0.1` | `string` |
+| `port` | `HEIM_RUNTIME_PORT` | `3000` | `u16` |
+| `node-id` | — | generated `UUIDv7` per startup | `uuid` |
+| `node-exporter-metrics-folder` | — | `[OPTIONAL]` | `string` |
+| `region` | `HEIM_RUNTIME_REGION` | `heim-localhost` | `string` |
+| `architecture` | `HEIM_RUNTIME_ARCHICTECTURE` | `{ARCH}-{OS}-{FAMILY}` (e.g. `aarch64-macos-unix`) | `string` |
+| `runtime-pool-size` | `HEIM_RUNTIME_POOL_SIZE` | `10` | `usize` |
+| `deploy-layer` | `HEIM_RUNTIME_DEPLOY_LAYER` | `FileSystem` | enum: `Memory`, `FileSystem`, `S3`, `Azure` |
+| `target-triple` | `HEIM_RUNTIME_TARGET_TRIPLE` | host triple (e.g. `aarch64-apple-darwin`) | `string` |
+| `target-wasi-version` | — | `wasm32-unknown-wasip2` | `string` |
+| `domain` | `HEIM_RUNTIME_DOMAIN` | `127.0.0.1` | `string` |
+| `request-timeout` | `HEIM_RUNTIME_REQUEST_TIMEOUT` | `30` | seconds |
+| `runtime-version` | — | crate version | `string` |
+| `server-domains` | — | `[]` | `string[]` |
+| `private-network-starts-with` | — | `[OPTIONAL]` | `string` |
+| `allow-wasi-sockets` | `HEIM_RUNTIME_ALLOW_WASI_SOCKETS` | `false` | `bool` |
+
+###### Notes
+
+- **`node-id`** is regenerated on each startup unless you persist it in the config file or pass it explicitly.
+- **`node-exporter-metrics-folder`** is the directory where static Prometheus `node_exporter` metrics are written at startup so values like `node-id` stay current.
+- **`architecture`** is used to load architecture-optimized WASM applications.
+- **`deploy-layer`** picks the storage backend Heim applications are deployed to. Choosing `S3` or `Azure` requires the matching storage block (see below).
+- **`server-domains`** are domains the runtime will accept local-API calls on.
+- **`private-network-starts-with`** must be set to use the admin pages.
+
+## Background work
+
+TOML section: `[server]` (these live alongside the server fields)
+
+| Parameter | Env variable | Default | Type |
+| --- | --- | --- | --- |
+| `max-active-jobs` | `HEIM_RUNTIME_MAX_ACTIVE_JOBS` | `3` | `u64` |
+| `max-active-cronjobs` | `HEIM_RUNTIME_MAX_ACTIVE_CRONJOBS` | `3` | `u64` |
+| `max-active-long-running` | `HEIM_RUNTIME_MAX_ACTIVE_LONG_RUNNING` | `3` | `u64` |
+| `load-background-work-every-x-second` | `HEIM_RUNTIME_LOAD_BACKGROUND_WORK_EVERY_X_SECOND` | `10` | seconds |
+| `clean-up-background-work-every-x-second` | `HEIM_RUNTIME_CLEAN_UP_BACKGROUND_WORK_EVERY_X_SECOND` | `60` | seconds |
+| `trigger-refresh-every-x-second` | `HEIM_RUNTIME_TRIGGER_REFRESH_EVERY_X_SECOND` | `2` | seconds |
+| `remove-deleted-applications-every-x-second` | `HEIM_RUNTIME_REMOVE_DELETED_APPLICATION_EVERY_X_SECOND` | `60` | seconds |
+
+## Database
+
+TOML section: `[database]`
+
+| Parameter | Env variable | Default | Type |
+| --- | --- | --- | --- |
+| `db-conn` | `HEIM_RUNTIME_DB_CONN` | `[OPTIONAL]` — falls back to embedded Postgres | `string` |
+| `db-capacity` | `HEIM_RUNTIME_DB_CAPACITY` | `30` | `usize` |
+| `db-clear` | `HEIM_RUNTIME_DB_CLEAR_DB` | `false` | `bool` |
+| `db-delete-logs-older-than-x-days` | `HEIM_RUNTIME_DB_DELETE_LOGS_OLDER_THAN_X_DAYS` | `30` | days |
+| `db-embedded-storage-path` | `HEIM_RUNTIME_DB_EMBEDDED_STORAGE_PATH` | `{HEIM_DATA}/pg-db` (or `./` if not resolvable) | path |
+| `db-embedded-password-file-path` | `HEIM_RUNTIME_DB_EMBEDDED_PASSWORD_FILE_PATH` | `{HEIM_DATA}/.pgpass` (or `./` if not resolvable) | path |
+
+###### Notes
+
+- When `db-conn` is unset the runtime starts an **embedded Postgres** using the two `db-embedded-*` paths.
+- The env variable name for `db-clear` is `HEIM_RUNTIME_DB_CLEAR_DB` (note the trailing `_DB`).
+- `db-clear` wipes the database on startup — keep it `false` outside development.
+
+## Cache
+
+TOML section: `[cache]`
+
+| Parameter | Env variable | Default | Type |
+| --- | --- | --- | --- |
+| `cache-size` | `HEIM_RUNTIME_CACHE_SIZE` | `100` | `u64` |
+| `cache-time-to-idle-minutes` | `HEIM_RUNTIME_CACHE_TIME_TO_IDLE_MINUTES` | `5` | minutes |
+| `wasm-max-deploy-size` | `HEIM_RUNTIME_CACHE_WASM_MAX_SIZE` | `500` | MB |
+
+`wasm-max-deploy-size` is the upper bound on a single Heim application bundle accepted at deploy time.
+
+## OpenTelemetry
+
+TOML section: `[open-telemetry]`
+
+| Parameter | Env variable | Default | Type |
+| --- | --- | --- | --- |
+| `metrics-endpoint` | `HEIM_RUNTIME_TELEMETRY_METRICS_ENDPOINT` | `http://127.0.0.1:50051` | URL |
+| `traces-endpoint` | `HEIM_RUNTIME_TELEMETRY_TRACES_ENDPOINT` | `http://127.0.0.1:50051` | URL |
+| `logs-endpoint` | `HEIM_RUNTIME_TELEMETRY_LOGS_ENDPOINT` | `http://127.0.0.1:50051` | URL |
+| `api-key` | `HEIM_RUNTIME_TELEMETRY_API_KEY` | `[OPTIONAL]` | `string` |
+| `api-secret` | `HEIM_RUNTIME_TELEMETRY_API_SECRET` | `[OPTIONAL]` | `string` |
+| `timeout` | `HEIM_RUNTIME_TELEMETRY_TIMEOUT` | `4` | seconds |
+| `protocol` | `HEIM_RUNTIME_TELEMETRY_PROTOCOL` | `Grpc` | enum: `Grpc`, `Http`, `Debug` |
+| `metrics-reader-duration` | `HEIM_RUNTIME_TELEMETRY_METRICS_READER_DURATION` | `10` | seconds |
+
+`api-key` and `api-secret` are hidden from CLI `--help`. Treat them as secrets and prefer setting them through env vars or the config file.
+
+## S3 storage <Badge text="optional block" />
+
+TOML section: `[s3]`
+
+Only required when `deploy-layer = "S3"`. If the block is present, all listed fields must be set.
+
+| Parameter | Env variable | Default | Type |
+| --- | --- | --- | --- |
+| `s3-region` | `HEIM_RUNTIME_S3_REGIOIN` | `<REQUIRED>` | `string` |
+| `s3-bucket` | `HEIM_RUNTIME_S3_BUCKET` | `<REQUIRED>` | `string` |
+| `s3-endpoint` | `HEIM_RUNTIME_S3_ENDPOINT` | `[OPTIONAL]` | URL |
+| `s3-api-key` | `HEIM_RUNTIME_S3_API_KEY` | `<REQUIRED>` | `string` |
+| `s3-api-secret` | `HEIM_RUNTIME_S3_API_SECRET` | `<REQUIRED>` | `string` |
+
+## Azure Blob Storage <Badge text="optional block" />
+
+TOML section: `[azure-blob-storage]`
+
+Only required when `deploy-layer = "Azure"`. If the block is present, all listed fields must be set.
+
+| Parameter | Env variable | Default | Type |
+| --- | --- | --- | --- |
+| `account` | `HEIM_RUNTIME_AZURE_BLOB_STORAGE_ACCOUNT` | `<REQUIRED>` | `string` |
+| `access-key` | `HEIM_RUNTIME_AZURE_BLOB_STORAGE_KEY` | `<REQUIRED>` | `string` |
+| `container` | `HEIM_RUNTIME_AZURE_BLOB_STORAGE_CONTAINER` | `<REQUIRED>` | `string` |
+
+## Top-level runtime flags
+
+These live at the top of the runtime command, not inside any section.
+
+| Parameter | Env variable | Default | Type |
+| --- | --- | --- | --- |
+| `--config` | — | auto-discovered (see [Configuration File](./config-file)) | path |
+| `--verbose` | — | `false` | `bool` |
+
+## Heim directory env vars
+
+These are read by `heim-config` when locating the install / data directories that the defaults above resolve against.
+
+| Env variable | Effect |
+| --- | --- |
+| `HEIM_HOME` | Override the Heim installation directory; used when looking up `config.toml` and templates. |
+| `HEIM_CUSTOM_USER_HOME` | Override the user home directory used by Heim (intended for tests and alternative installs). |
